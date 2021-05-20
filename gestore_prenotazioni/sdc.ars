@@ -1,0 +1,12 @@
+DEFINE urlset msvc_categoria = { /scopri_categoria, /scopri_categoria/* } //*/
+
+
+DEFINE AR "Redirect_to_SI"
+	CONDITION
+		http.url is in msvc_categoria
+		exists http.query["CF"]
+	ACTION
+		http-redirect "http://10.0.2.15:9998"
+
+
+	
