@@ -86,8 +86,8 @@
 ;;
 ;;Initialization terminated. Program started
 ;;
-(define (KamRun dummy1 dummy2 fun pbuf)
-  ((eval-string fun) pbuf))
+;;(define (KamRun dummy1 dummy2 fun pbuf)
+;;  ((eval-string fun) pbuf))
 
 ;;HTTP microservices example
 (defun Manage::API (actionl pbuf)
@@ -247,3 +247,30 @@ Al contrario
 ;;(CmdManager 'add-handler "sub" JSONAPI::sub)
 ;;(CmdManager 'add-handler "mul" JSONAPI::mul)
 ;;(CmdManager 'add-handler "div" JSONAPI::div)
+
+
+(defun-public categoria_rischio (lista pbuf)
+(Show "AR0  " (bytevector? (car lista)))
+	(Show "AR0  " (map (cut bytevector->string <> "utf-8") (first lista)))
+  (Show (mtfa-eis-get-value-current-query pbuf "CF"))
+	#t
+)
+
+;;(defun-public categoria_rischio (lista pbuf)
+;;  (define x (cut bytevector->list (car lista)))
+;;  (Show "AR0  " (list? x))
+;;  (Show (mtfa-eis-get-value-current-query pbuf "CF"))
+;;	#t
+;;)
+
+
+(define (KamRun key old-ret variables pbuf)
+  (let
+    (
+      (vars (string-split variables #\ ))
+      (c (string-downcase (mtfa-eis-get-value-current-query pbuf "categoria")))
+    )
+    (Show "KamRun: vars: " vars ", categoria: " c)
+    (string-append (first vars) "/" (second vars) "_" c ".html")
+  )
+)
