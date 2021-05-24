@@ -257,6 +257,29 @@ Al contrario
 ;;)
 
 
+#|
+For the MD5-based algorithm, the salt should consist of the string $1$, 
+followed by up to 8 characters, terminated by either another $ or the end of the string.
+The result of crypt will be the salt, followed by a $ if the salt didn't end with one, 
+followed by 22 characters from the alphabet ./0-9A-Za-z, up to 34 characters total.
+Every character in the key is significant.
+|#
+(define salt "$1$cnfjekbg$")
+
+(defun-public is_valid_cookie (lista pbuf)
+  (let
+    (
+      (codice_fiscale (string-upcase (mtfa-eis-get-value-current-query pbuf "CF")))
+      (categoria_rischio (string-upcase (mtfa-eis-get-value-current-query pbuf "categoria")))
+      (validation_cookie (bytevector->string (car lista) "UTF-8"))
+    )
+    (Show "str compare with validation_cookie " (equal? (crypt (string-append codice_fiscale ":" categoria_rischio) salt) validation_cookie))
+    (Show "validation_cookie " (crypt (string-append codice_fiscale ":" categoria_rischio) salt))
+    (equal? (crypt (string-append codice_fiscale ":" categoria_rischio) salt) validation_cookie)
+  )
+)
+
+
 (define (KamRun key old-ret variables pbuf)
   (let
     (
@@ -268,7 +291,7 @@ Al contrario
   )
 )
 
-
+;;TODO aggiona da test2
 (defun Manage::getcategoria (actionl pbuf)
   (let
     ( 

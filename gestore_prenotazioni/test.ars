@@ -7,17 +7,29 @@ DEFINE AR "RedirectPoliVaccinali"
 		http.url is in msvc_categoria
 		exists http.query["CF"]
 		exists http.query["categoria"]
-        // e' settato il cookie?
+        exists http.cookie["validation"]
+        CALL is_valid_cookie WITH http.cookie["validation"]
 	ACTION
 		http.redirect "? http://10.0.2.15:9998 categoria" 
 	;
+
+DEFINE AR "ErrorHandlerVAlidation"
+	CONDITION
+		http.url is in msvc_categoria
+		exists http.query["CF"]
+		exists http.query["categoria"]
+        exists http.cookie["validation"]
+	ACTION
+    //TODO torna errore nella validazione del cookie
+		ANSWER "<h1>Errore</h1>"
+	;  
 
 DEFINE AR "GetCategoria"
 	CONDITION
 		http.url is in msvc_categoria
 		exists http.query["CF"]
-		! exists http.query["categoria"]
 	ACTION
+        //TODO aggiorna con test2.zip
 		MANAGE "getcategoria"
 	;
 
