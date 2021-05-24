@@ -249,13 +249,6 @@ Al contrario
 ;;(CmdManager 'add-handler "div" JSONAPI::div)
 
 
-(defun-public categoria_rischio (lista pbuf)
-(Show "AR0  " (bytevector? (car lista)))
-	(Show "AR0  " (map (cut bytevector->string <> "utf-8") (first lista)))
-  (Show (mtfa-eis-get-value-current-query pbuf "CF"))
-	#t
-)
-
 ;;(defun-public categoria_rischio (lista pbuf)
 ;;  (define x (cut bytevector->list (car lista)))
 ;;  (Show "AR0  " (list? x))
@@ -274,3 +267,24 @@ Al contrario
     (string-append (first vars) "/" (second vars) "_" c ".html")
   )
 )
+
+
+(defun Manage::getcategoria (actionl pbuf)
+  (let
+    ( 
+      (codiceFiscale (mtfa-eis-get-value-current-query pbuf "CF"))
+      (categoria_rischio "E")
+    )
+    (eis::GiveHTTPAnswer 
+        eis::http-answer-ok 
+      "Content-Type text/plain charset=utf-8" 
+      ""
+      categoria_rischio
+    )  
+  )
+)
+
+    
+;;Add HOOK
+(eis::function-pointer-add "getcategoria" Manage::getcategoria)
+;;

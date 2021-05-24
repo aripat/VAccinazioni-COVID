@@ -1,6 +1,4 @@
 DEFINE urlset msvc_categoria = { /scopri_categoria, /scopri_categoria/* }; //*/
-//DEFINE set categoria = {"RZZLSF"};
-DEFINE set categoria = {"RZZLSF_E", "RZZLSF_A"};
 
 //AR di indirizzamento per utente che conosce la categoria:
 // verifica se la categoria fornita e' corretta ed esegue il redirect verso la pagina di ``categoria'' appropriata
@@ -9,11 +7,20 @@ DEFINE AR "RedirectPoliVaccinali"
 		http.url is in msvc_categoria
 		exists http.query["CF"]
 		exists http.query["categoria"]
-		http.query["CF"] is in categoria //TODO PATTERN EXTRACTOR o CAT? oppure passa set a guile?
-		// CALL categoria_rischio WITH categoria
+        // e' settato il cookie?
 	ACTION
 		http.redirect "? http://10.0.2.15:9998 categoria" 
 	;
+
+DEFINE AR "GetCategoria"
+	CONDITION
+		http.url is in msvc_categoria
+		exists http.query["CF"]
+		! exists http.query["categoria"]
+	ACTION
+		MANAGE "getcategoria"
+	;
+
 
 
 (*
