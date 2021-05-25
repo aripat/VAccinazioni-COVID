@@ -1,5 +1,15 @@
 DEFINE urlset msvc_categoria = { /scopri_categoria, /scopri_categoria/* }; //*/
 
+DEFINE AR "GetCategoria_RedirectPoliVaccinali"
+	CONDITION
+		http.url is in msvc_categoria
+		exists http.query["CF"]
+		!exists http.query["categoria"]
+	ACTION
+		MANAGE "getcategoria"
+	;
+
+
 //AR di indirizzamento per utente che conosce la categoria:
 // verifica se la categoria fornita e' corretta ed esegue il redirect verso la pagina di ``categoria'' appropriata
 DEFINE AR "RedirectPoliVaccinali"
@@ -23,16 +33,6 @@ DEFINE AR "ErrorHandlerVAlidation"
     //TODO torna errore nella validazione del cookie
 		ANSWER "<h1>Errore</h1>"
 	;  
-
-DEFINE AR "GetCategoria"
-	CONDITION
-		http.url is in msvc_categoria
-		exists http.query["CF"]
-	ACTION
-        //TODO aggiorna con test2.zip
-		MANAGE "getcategoria"
-	;
-
 
 
 (*

@@ -265,6 +265,7 @@ followed by 22 characters from the alphabet ./0-9A-Za-z, up to 34 characters tot
 Every character in the key is significant.
 |#
 (define salt "$1$cnfjekbg$")
+(define db (db-interface::set-db-coordinates "127.0.0.1" "root" "" "test" 3306))
 
 (defun-public is_valid_cookie (lista pbuf)
   (let
@@ -279,7 +280,6 @@ Every character in the key is significant.
   )
 )
 
-
 (define (KamRun key old-ret variables pbuf)
   (let
     (
@@ -291,23 +291,37 @@ Every character in the key is significant.
   )
 )
 
-;;TODO aggiona da test2
+;;TODO redirect verso va con categoria e codice fiscale
 (defun Manage::getcategoria (actionl pbuf)
-  (let
-    ( 
-      (codiceFiscale (mtfa-eis-get-value-current-query pbuf "CF"))
-      (categoria_rischio "E")
+  (Show "getcategoria is running")
+  (define connessione (db-interface::DoConnect db))
+  (let*
+    ( (codice_fiscale (string-upcase (mtfa-eis-get-value-current-query pbuf "CF")))
+      (query (string-append "select cat_rischio from utenti where codice_fiscale='" codice_fiscale "' ORDER BY cat_rischio DESC LIMIT 1;"))
+      (data (db-interface::DoSqlQuery connessione query))
+      (categoria_rischio (string-upcase (car(car data))))
     )
     (eis::GiveHTTPAnswer 
-        eis::http-answer-ok 
-      "Content-Type text/plain charset=utf-8" 
-      ""
-      categoria_rischio
-    )  
+          eis::http-answer-ok 
+        "Content-Type: text/plain charset=utf-8" 
+        ""
+        categoria_rischio
+    )
   )
 )
 
-    
-;;Add HOOK
+;;HOOK
 (eis::function-pointer-add "getcategoria" Manage::getcategoria)
 ;;
+#|
+(eis::GiveHTTPAnswer 
+      "HTTP/1.1 302 Found"
+      (string-append  "Location: " 
+                      "http://" (mtfa-eis-get-current-ip-dst pbuf) ":" (number->string (mtfa-eis-get-current-port-dst pbuf)) "/" (mtfa-eis-get-current-uri pbuf) "&categoria=" categoria_rischio
+      )
+      (string-append  "Set-Cookie: validation=" 
+                      (crypt (string-append codice_fiscale ":" categoria_rischio) salt)
+      )
+      ""
+    )
+|#
