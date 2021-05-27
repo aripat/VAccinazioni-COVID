@@ -265,7 +265,7 @@ followed by 22 characters from the alphabet ./0-9A-Za-z, up to 34 characters tot
 Every character in the key is significant.
 |#
 (define salt "$1$cnfjekbg$")
-(define db (db-interface::set-db-coordinates "127.0.0.1" "root" "" "test" 3306))
+(define db (db-interface::set-db-coordinates "127.0.0.1" "root" "" "arpr" 3306))
 
 (defun-public is_valid_cookie (lista pbuf)
   (let
@@ -291,28 +291,77 @@ Every character in the key is significant.
   )
 )
 
+
+
+(define (eta_in_range codice_fiscale)
+  (define lower_bound 42)
+  (define upper_bound 81)
+  (Show "eta_in_range is running")
+  (let
+    ((anno_nascita (string->number (substring codice_fiscale 6 8))))
+    (if (and (>= anno_nascita lower_bound) (<= anno_nascita upper_bound))
+      #t
+      #f
+    )
+  )
+)
+
 ;;TODO redirect verso va con categoria e codice fiscale
 (defun Manage::getcategoria (actionl pbuf)
   (Show "getcategoria is running")
   (define connessione (db-interface::DoConnect db))
   (let*
     ( (codice_fiscale (string-upcase (mtfa-eis-get-value-current-query pbuf "CF")))
-      (query (string-append "select cat_rischio from utenti where codice_fiscale='" codice_fiscale "' ORDER BY cat_rischio DESC LIMIT 1;"))
+      (team (mtfa-eis-get-value-current-query pbuf "TEAM"))
+      (query (string-append "SELECT cat_rischio from cittadino, team_cittadino where cittadino.codice_fiscale = team_cittadino.codice_fiscale AND cittadino.codice_fiscale='" codice_fiscale "' AND team ='" team "' ORDER BY cat_rischio ASC LIMIT 1;"))
       (data (db-interface::DoSqlQuery connessione query))
-      (categoria_rischio (string-upcase (car(car data))))
+      (categoria_rischio #nil)
     )
-    (eis::GiveHTTPAnswer 
-          eis::http-answer-ok 
-        "Content-Type: text/plain charset=utf-8" 
+    (Show "categoria_rischio pre-query " categoria_rischio )
+    (if (> (length data) 0)
+      (set! categoria_rischio (string-upcase (car(car data))))
+      (if (eta_in_range codice_fiscale) (set! categoria_rischio "Z"))
+    )
+    (Show "categoria_rischio post-query " categoria_rischio )
+    (Show (string-append  "Location: " 
+                    "http://" (mtfa-eis-get-current-ip-dst pbuf) ":" (number->string (mtfa-eis-get-current-port-dst pbuf)) (mtfa-eis-get-current-uri pbuf))
+    )
+    (if (not categoria_rischio)
+      (eis::GiveHTTPAnswer 
+            eis::http-answer-ok 
+          "Content-Type: text/plain charset=utf-8" 
+          ""
+          "<h1>Non rientra nelle categorie di aventi diritto</h1>"
+      )
+      (eis::GiveHTTPAnswer 
+        "HTTP/1.1 302 Found"
+        (string-append  "Location: " 
+                        "http://" (mtfa-eis-get-current-ip-dst pbuf) ":" (number->string (mtfa-eis-get-current-port-dst pbuf)) (mtfa-eis-get-current-uri pbuf) "&categoria=" categoria_rischio
+        )
+        (string-append  "Set-Cookie: validation=" 
+                        (crypt (string-append codice_fiscale ":" categoria_rischio) salt) "; Expires=<date>"
+        )
         ""
-        categoria_rischio
+      )
     )
   )
 )
 
-;;HOOK
+;;HOOK "getcategoria"
 (eis::function-pointer-add "getcategoria" Manage::getcategoria)
-;;
+
+#|
+(eis::GiveHTTPAnswer 
+            eis::http-answer-ok 
+          "Content-Type: text/plain charset=utf-8" 
+          ""
+          categoria_rischio
+      )
+
+|#
+
+
+
 #|
 (eis::GiveHTTPAnswer 
       "HTTP/1.1 302 Found"
