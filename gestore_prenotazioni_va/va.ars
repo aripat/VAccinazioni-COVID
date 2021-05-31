@@ -1,4 +1,14 @@
 DEFINE urlset msvc_categoria = { /scopri_categoria, /scopri_categoria/* }; //*/
+DEFINE set msvc_home = { "/home.html"};
+
+
+DEFINE AR "GoHome"
+	CONDITION
+		http.url is in msvc_home
+	ACTION
+		tcp.redirect "10.0.2.15:9998"
+	;
+
 
 DEFINE AR "GetCategoria_RedirectPoliVaccinali"
 	CONDITION
@@ -13,7 +23,6 @@ DEFINE AR "GetCategoria_RedirectPoliVaccinali"
 
 //AR di indirizzamento per utente che conosce la categoria:
 // verifica se la categoria fornita e' corretta ed esegue il redirect verso la pagina di ``categoria'' appropriata
-//TODO redirect in TCP
 DEFINE AR "RedirectPoliVaccinali"
 	CONDITION
 		http.url is in msvc_categoria
@@ -23,7 +32,7 @@ DEFINE AR "RedirectPoliVaccinali"
         exists http.cookie["validation"]
         CALL is_valid_cookie WITH http.cookie["validation"]
 	ACTION
-		http.redirect "? http://10.0.2.15:9998 categoria"
+		tcp.redirect "10.0.2.15:9998"
 	;
 
 DEFINE AR "ErrorHandlerVAlidation"

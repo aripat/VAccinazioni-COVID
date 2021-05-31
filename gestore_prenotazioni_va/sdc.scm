@@ -280,18 +280,21 @@ Every character in the key is significant.
   )
 )
 
-(define (KamRun key old-ret variables pbuf)
-  (let
-    (
-      (vars (string-split variables #\ ))
-      (c (string-downcase (mtfa-eis-get-value-current-query pbuf "categoria")))
-    )
-    (Show "KamRun: vars: " vars ", categoria: " c)
-    (string-append (first vars) "/" (second vars) "_" c ".html")
-  )
+(define app::server::ip "10.0.2.15")
+(define app::server::port "9998")
+
+(define (gopolivaccinali pbuf)
+   (string-append app::server::ip ":" app::server::port)
+
 )
 
+(define (gohome pbuf)
+  (string-append app::server::ip ":" app::server::port)
+)
 
+(define (KamRun key old-ret variables pbuf)
+  ((eval-string (first (string-split variables #\ ))) pbuf)
+)
 
 (define (eta_in_range codice_fiscale)
   ;;TODO read from file!
@@ -340,13 +343,15 @@ Every character in the key is significant.
                         "http://" (mtfa-eis-get-current-ip-dst pbuf) ":" (number->string (mtfa-eis-get-current-port-dst pbuf)) (mtfa-eis-get-current-uri pbuf) "&categoria=" categoria_rischio
         )
         (string-append  "Set-Cookie: validation=" 
-                        (crypt (string-append codice_fiscale ":" categoria_rischio) salt) "; Expires=<date>"
+                        (crypt (string-append codice_fiscale ":" categoria_rischio) salt)
         )
         ""
       )
     )
   )
 )
+
+;; "; Expires=<date>"
 
 ;;HOOK "getcategoria"
 (eis::function-pointer-add "getcategoria" Manage::getcategoria)
