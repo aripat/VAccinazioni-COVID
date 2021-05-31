@@ -1,5 +1,0 @@
-DEFINE AR "DB_Check"
-	CONDITION
-		exists http.query["CF"]
-	ACTION
-		http-redirect "http://10.0.2.15:9998"

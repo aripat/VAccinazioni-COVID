@@ -23,7 +23,7 @@ DEFINE AR "RedirectPoliVaccinali"
         exists http.cookie["validation"]
         CALL is_valid_cookie WITH http.cookie["validation"]
 	ACTION
-		http.redirect "? http://10.0.2.15:9998 categoria" 
+		http.redirect "? http://10.0.2.15:9998 categoria"
 	;
 
 DEFINE AR "ErrorHandlerVAlidation"
@@ -36,28 +36,4 @@ DEFINE AR "ErrorHandlerVAlidation"
 	ACTION
     	//TODO torna errore nella validazione del cookie
 		ANSWER "<h1>Unauthorized</h1>"
-	;  
-
-
-(*
-//TODO come si passano a KamRun parametri variabili?
-// altrimenti una AR per categoria ?
-//AR di indirizzamento per utente che non conosce la categoria
-DEFINE AR "CategoriaRischio_Eta"
-	CONDITION
-		http.url is in msvc_categoria
-		exists http.query["CF"]
-		http.query["CF"] is in categoria //come sopra ma con categoria variabile e non in pbuf
-		// CALL categoria_rischio WITH categoria
-	ACTION
-		http.redirect "? http://10.0.2.15:9998 categoria E"
 	;
-
-DEFINE AR "Redirect_to_SI"
-	CONDITION
-		http.url is in msvc_categoria
-		exists http.query["CF"]
-	ACTION
-		http-redirect "http://10.0.2.15:9998"
-	;
-*)

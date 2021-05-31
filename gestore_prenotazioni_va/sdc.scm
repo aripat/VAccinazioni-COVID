@@ -86,8 +86,8 @@
 ;;
 ;;Initialization terminated. Program started
 ;;
-(define (KamRun dummy1 dummy2 fun pbuf)
-  ((eval-string fun) pbuf))
+;;(define (KamRun dummy1 dummy2 fun pbuf)
+;;  ((eval-string fun) pbuf))
 
 ;;HTTP microservices example
 (defun Manage::API (actionl pbuf)
@@ -247,3 +247,106 @@ Al contrario
 ;;(CmdManager 'add-handler "sub" JSONAPI::sub)
 ;;(CmdManager 'add-handler "mul" JSONAPI::mul)
 ;;(CmdManager 'add-handler "div" JSONAPI::div)
+
+
+;;(defun-public categoria_rischio (lista pbuf)
+;;  (define x (cut bytevector->list (car lista)))
+;;  (Show "AR0  " (list? x))
+;;  (Show (mtfa-eis-get-value-current-query pbuf "CF"))
+;;	#t
+;;)
+
+
+#|
+For the MD5-based algorithm, the salt should consist of the string $1$, 
+followed by up to 8 characters, terminated by either another $ or the end of the string.
+The result of crypt will be the salt, followed by a $ if the salt didn't end with one, 
+followed by 22 characters from the alphabet ./0-9A-Za-z, up to 34 characters total.
+Every character in the key is significant.
+|#
+(define salt "$1$cnfjekbg$")
+(define db (db-interface::set-db-coordinates "127.0.0.1" "root" "" "arpr" 3306))
+
+(defun-public is_valid_cookie (lista pbuf)
+  (let
+    (
+      (codice_fiscale (string-upcase (mtfa-eis-get-value-current-query pbuf "CF")))
+      (categoria_rischio (string-upcase (mtfa-eis-get-value-current-query pbuf "categoria")))
+      (validation_cookie (bytevector->string (car lista) "UTF-8"))
+    )
+    (Show "str compare with validation_cookie " (equal? (crypt (string-append codice_fiscale ":" categoria_rischio) salt) validation_cookie))
+    (Show "validation_cookie " (crypt (string-append codice_fiscale ":" categoria_rischio) salt))
+    (equal? (crypt (string-append codice_fiscale ":" categoria_rischio) salt) validation_cookie)
+  )
+)
+
+(define (KamRun key old-ret variables pbuf)
+  (let
+    (
+      (vars (string-split variables #\ ))
+      (c (string-downcase (mtfa-eis-get-value-current-query pbuf "categoria")))
+    )
+    (Show "KamRun: vars: " vars ", categoria: " c)
+    (string-append (first vars) "/" (second vars) "_" c ".html")
+  )
+)
+
+
+
+(define (eta_in_range codice_fiscale)
+  ;;TODO read from file!
+  (define lower_bound 42)
+  (define upper_bound 81)
+  (Show "eta_in_range is running")
+  (let
+    ((anno_nascita (string->number (substring codice_fiscale 6 8))))
+    (if (and (>= anno_nascita lower_bound) (<= anno_nascita upper_bound))
+      #t
+      #f
+    )
+  )
+)
+
+(defun Manage::getcategoria (actionl pbuf)
+  (Show "getcategoria is running")
+  (define connessione (db-interface::DoConnect db))
+  (let*
+    ( (codice_fiscale (string-upcase (mtfa-eis-get-value-current-query pbuf "CF")))
+      (team (mtfa-eis-get-value-current-query pbuf "TEAM"))
+      (query (string-append "SELECT cat_rischio from cittadino, team_cittadino where cittadino.codice_fiscale = team_cittadino.codice_fiscale AND cittadino.codice_fiscale='" codice_fiscale "' AND team ='" team "' ORDER BY cat_rischio ASC LIMIT 1;"))
+      (data (db-interface::DoSqlQuery connessione query))
+      (categoria_rischio #nil)
+    )
+    (Show "categoria_rischio pre-query " categoria_rischio )
+    (if (> (length data) 0)
+      (set! categoria_rischio (string-upcase (car(car data))))
+      (if (eta_in_range codice_fiscale) (set! categoria_rischio "Z"))
+    )
+    (Show "categoria_rischio post-query " categoria_rischio )
+    (Show (string-append  "Location: " 
+                    "http://" (mtfa-eis-get-current-ip-dst pbuf) ":" (number->string (mtfa-eis-get-current-port-dst pbuf)) (mtfa-eis-get-current-uri pbuf))
+    )
+    (if (not categoria_rischio)
+      (eis::GiveHTTPAnswer 
+            eis::http-answer-ok 
+          "Content-Type: text/plain charset=utf-8" 
+          ""
+          "<h1>Non rientra nelle categorie di aventi diritto</h1>"
+      )
+      ;;TODO Expire time cookie
+      (eis::GiveHTTPAnswer 
+        "HTTP/1.1 302 Found"
+        (string-append  "Location: " 
+                        "http://" (mtfa-eis-get-current-ip-dst pbuf) ":" (number->string (mtfa-eis-get-current-port-dst pbuf)) (mtfa-eis-get-current-uri pbuf) "&categoria=" categoria_rischio
+        )
+        (string-append  "Set-Cookie: validation=" 
+                        (crypt (string-append codice_fiscale ":" categoria_rischio) salt) "; Expires=<date>"
+        )
+        ""
+      )
+    )
+  )
+)
+
+;;HOOK "getcategoria"
+(eis::function-pointer-add "getcategoria" Manage::getcategoria)
