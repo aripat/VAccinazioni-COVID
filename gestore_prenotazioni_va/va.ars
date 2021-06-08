@@ -46,6 +46,6 @@ DEFINE AR "ErrorHandlerVAlidation"
         exists http.cookie["validation"]
 	ACTION
     	//TODO Answer File Error
-		ANSWER "<h1>Unauthorized</h1>"
+		ANSWER "./errors/errors.html"
 	;
 
