@@ -322,12 +322,7 @@ Every character in the key is significant.
       (if (eta_in_range codice_fiscale) (set! categoria_rischio "Z"))
     )
     (if (not categoria_rischio)
-      (eis::GiveHTTPAnswer 
-            eis::http-answer-ok 
-          "Content-Type: text/plain charset=utf-8" 
-          ""
-          "<h1>Non rientra nelle categorie di aventi diritto</h1>"
-      )
+      (eis::GiveHTTPHtmlAnswer (eis::LoadPage "./gestore_anomalie/no_vaccino.html" "./"))
       ;; answer Redirect with validation cookie
       (eis::GiveHTTPAnswer 
         "HTTP/1.1 302 Found"
@@ -346,3 +341,15 @@ Every character in the key is significant.
 
 ;;HOOK "getcategoria"
 (eis::function-pointer-add "getcategoria" Manage::getcategoria)
+
+
+
+(defun Manage::errormanager (actionl pbuf)
+  (eis::GiveHTTPAnswer 
+    "HTTP/1.1 404"
+    ""
+  )
+)
+
+;;HOOK "errormanager"
+(eis::function-pointer-add "errormanager" Manage::errormanager)

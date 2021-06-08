@@ -1,3 +1,4 @@
+DEFINE urlset all = { /* }; // */
 DEFINE urlset msvc_categoria = { /scopri_categoria, /scopri_categoria/* }; //*/
 DEFINE set msvc_home = { "/home.html"};
 
@@ -39,13 +40,8 @@ DEFINE AR "RedirectPoliVaccinali"
 //TODO migliorare gestione errori #2 ( Qui valutare di mostrare una pagina di errore, con un link per home, senza controllare particolari condizioni)
 DEFINE AR "ErrorHandlerVAlidation"
 	CONDITION
-		http.url is in msvc_categoria
-		exists http.query["CF"]
-		exists http.query["categoria"]
-		exists http.query["TEAM"]
-        exists http.cookie["validation"]
+		http.url is in all
 	ACTION
-    	//TODO Answer File Error
-		ANSWER "./errors/errors.html"
+		MANAGE "errormanager"
 	;
 
