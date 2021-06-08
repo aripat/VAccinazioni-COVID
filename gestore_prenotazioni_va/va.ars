@@ -1,7 +1,7 @@
 DEFINE urlset msvc_categoria = { /scopri_categoria, /scopri_categoria/* }; //*/
 DEFINE set msvc_home = { "/home.html"};
 
-
+// Redirect verso la Home Page
 DEFINE AR "GoHome"
 	CONDITION
 		http.url is in msvc_home
@@ -9,20 +9,21 @@ DEFINE AR "GoHome"
 		tcp.redirect "10.0.2.15:9998"
 	;
 
-
+// TODO migliorare gestione errori #1 (se utente non ha cookie va comunque recuperata la categoria e validata)
+// Recupera la categoria di rischio per l'utente e la valida tramite cookie
 DEFINE AR "GetCategoria_RedirectPoliVaccinali"
 	CONDITION
 		http.url is in msvc_categoria
 		exists http.query["CF"]
 		exists http.query["TEAM"]
 		!exists http.query["categoria"]
+		// !exists http.cookie["validation"]
 	ACTION
 		MANAGE "getcategoria"
 	;
 
 
-//AR di indirizzamento per utente che conosce la categoria:
-// verifica se la categoria fornita e' corretta ed esegue il redirect verso la pagina di ``categoria'' appropriata
+// Effettua il redirect verso la pagina dei Poli Vaccinali sse la categoria e' stata validata dalla VA
 DEFINE AR "RedirectPoliVaccinali"
 	CONDITION
 		http.url is in msvc_categoria
@@ -35,6 +36,7 @@ DEFINE AR "RedirectPoliVaccinali"
 		tcp.redirect "10.0.2.15:9998"
 	;
 
+//TODO migliorare gestione errori #2 ( Qui valutare di mostrare una pagina di errore, con un link per home, senza controllare particolari condizioni)
 DEFINE AR "ErrorHandlerVAlidation"
 	CONDITION
 		http.url is in msvc_categoria
@@ -43,6 +45,7 @@ DEFINE AR "ErrorHandlerVAlidation"
 		exists http.query["TEAM"]
         exists http.cookie["validation"]
 	ACTION
-    	//TODO torna errore nella validazione del cookie
+    	//TODO Answer File Error
 		ANSWER "<h1>Unauthorized</h1>"
 	;
+

@@ -41,5 +41,5 @@
 
 
 TODO insider:
-1) scrivere expire con comandi di date-time
-2)
+1) scrivere expire con comandi di date-time FATTO
+2) cancellare cookie al termine della procedura (tramite expire date)

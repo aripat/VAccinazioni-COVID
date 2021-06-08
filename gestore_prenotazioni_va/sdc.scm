@@ -249,12 +249,7 @@ Al contrario
 ;;(CmdManager 'add-handler "div" JSONAPI::div)
 
 
-;;(defun-public categoria_rischio (lista pbuf)
-;;  (define x (cut bytevector->list (car lista)))
-;;  (Show "AR0  " (list? x))
-;;  (Show (mtfa-eis-get-value-current-query pbuf "CF"))
-;;	#t
-;;)
+
 
 
 #|
@@ -267,6 +262,7 @@ Every character in the key is significant.
 (define salt "$1$cnfjekbg$")
 (define db (db-interface::set-db-coordinates "127.0.0.1" "root" "" "arpr" 3306))
 
+;; valida il cookie inviato 
 (defun-public is_valid_cookie (lista pbuf)
   (let
     (
@@ -283,11 +279,12 @@ Every character in the key is significant.
 (define app::server::ip "10.0.2.15")
 (define app::server::port "9998")
 
+;; not used
 (define (gopolivaccinali pbuf)
    (string-append app::server::ip ":" app::server::port)
 
 )
-
+;; not used
 (define (gohome pbuf)
   (string-append app::server::ip ":" app::server::port)
 )
@@ -320,14 +317,9 @@ Every character in the key is significant.
       (data (db-interface::DoSqlQuery connessione query))
       (categoria_rischio #nil)
     )
-    (Show "categoria_rischio pre-query " categoria_rischio )
     (if (> (length data) 0)
       (set! categoria_rischio (string-upcase (car(car data))))
       (if (eta_in_range codice_fiscale) (set! categoria_rischio "Z"))
-    )
-    (Show "categoria_rischio post-query " categoria_rischio )
-    (Show (string-append  "Location: " 
-                    "http://" (mtfa-eis-get-current-ip-dst pbuf) ":" (number->string (mtfa-eis-get-current-port-dst pbuf)) (mtfa-eis-get-current-uri pbuf))
     )
     (if (not categoria_rischio)
       (eis::GiveHTTPAnswer 
@@ -336,7 +328,7 @@ Every character in the key is significant.
           ""
           "<h1>Non rientra nelle categorie di aventi diritto</h1>"
       )
-      ;;TODO Expire time cookie
+      ;; answer Redirect with validation cookie
       (eis::GiveHTTPAnswer 
         "HTTP/1.1 302 Found"
         (string-append  "Location: " 
@@ -351,8 +343,6 @@ Every character in the key is significant.
     )
   )
 )
-
-;; "; Expires=<date>" ~
 
 ;;HOOK "getcategoria"
 (eis::function-pointer-add "getcategoria" Manage::getcategoria)
