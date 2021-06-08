@@ -1,6 +1,6 @@
 DEFINE urlset all = { /* }; // */
 DEFINE urlset msvc_categoria = { /scopri_categoria, /scopri_categoria/* }; //*/
-DEFINE set msvc_home = { "/home.html"};
+DEFINE urlset msvc_home = { /, /home }; 
 
 // Redirect verso la Home Page
 DEFINE AR "GoHome"
