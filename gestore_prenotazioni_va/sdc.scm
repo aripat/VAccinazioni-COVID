@@ -344,6 +344,7 @@ Every character in the key is significant.
         )
         (string-append  "Set-Cookie: validation=" 
                         (crypt (string-append codice_fiscale ":" categoria_rischio) salt)
+                        "Expires=" (date->string (current-date 3600) "~a, ~d  ~b ~Y ~T")
         )
         ""
       )
@@ -351,7 +352,7 @@ Every character in the key is significant.
   )
 )
 
-;; "; Expires=<date>"
+;; "; Expires=<date>" ~
 
 ;;HOOK "getcategoria"
 (eis::function-pointer-add "getcategoria" Manage::getcategoria)
