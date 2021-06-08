@@ -322,7 +322,12 @@ Every character in the key is significant.
       (if (eta_in_range codice_fiscale) (set! categoria_rischio "Z"))
     )
     (if (not categoria_rischio)
-      (eis::GiveHTTPHtmlAnswer (eis::LoadPage "./gestore_anomalie/no_vaccino.html" "./"))
+      (eis::GiveHTTPAnswer 
+        "HTTP/1.1 204 No Content"
+        ""
+        ""
+        ""
+      )
       ;; answer Redirect with validation cookie
       (eis::GiveHTTPAnswer 
         "HTTP/1.1 302 Found"
@@ -346,7 +351,9 @@ Every character in the key is significant.
 
 (defun Manage::errormanager (actionl pbuf)
   (eis::GiveHTTPAnswer 
-    "HTTP/1.1 404"
+    "HTTP/1.1 400 Bad Request"
+    ""
+    ""
     ""
   )
 )
