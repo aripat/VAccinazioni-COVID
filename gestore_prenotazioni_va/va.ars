@@ -1,13 +1,14 @@
 DEFINE urlset all = { /* }; // */
 DEFINE urlset msvc_categoria = { /scopri_categoria, /scopri_categoria/* }; //*/
-DEFINE urlset msvc_home = { /, /home }; 
+DEFINE urlset msvc_home = { /, /home };
+DEFINE set s = {}; 
 
 // Redirect verso la Home Page
 DEFINE AR "GoHome"
 	CONDITION
 		http.url is in msvc_home
 	ACTION
-		tcp.redirect "10.0.2.15:9998"
+		tcp.redirect "? to-application-server"
 	;
 
 // TODO migliorare gestione errori #1 (se utente non ha cookie va comunque recuperata la categoria e validata)
@@ -34,7 +35,7 @@ DEFINE AR "RedirectPoliVaccinali"
         exists http.cookie["validation"]
         CALL is_valid_cookie WITH http.cookie["validation"]
 	ACTION
-		tcp.redirect "10.0.2.15:9998"
+		tcp.redirect "? to-application-server"
 	;
 
 //TODO migliorare gestione errori #2 ( Qui valutare di mostrare una pagina di errore, con un link per home, senza controllare particolari condizioni)
@@ -45,3 +46,25 @@ DEFINE AR "ErrorHandlerVAlidation"
 		MANAGE "errormanager"
 	;
 
+//TODO verficare che funzioni
+DEFINE VR "Prenotazione"
+	CONDITION
+		http.url is in msvc_categoria
+		exists http.query["CF"]
+		exists http.query["TEAM"]
+		!exists http.query["categoria"]
+		// !exists http.cookie["validation"]
+	VAR
+		cf = http.query["CF"]
+		v_sid = net.sesid
+	ACTION
+		//report prenotazione {CAT{http.url, " cf=", http.query["CF"], " team=", http.query["TEAM"] }}
+		ADD CAT{http.url, " cf=", http.query["CF"], " team=", http.query["TEAM"] } to set s
+	NEXT
+		obs.event is net.recv
+		http.answer.code is "302 Found"
+		net.sesid is v_sid
+	ACTION
+		ADD CAT{http.answer.header["Location"]} to set s
+		report prenotazione {CAT {http.answer.header["Location"], " validation=", http.answer.cookie["validation"], " set cookie giusto ", http.answer.header["Set-Cookie"]}}
+	; 

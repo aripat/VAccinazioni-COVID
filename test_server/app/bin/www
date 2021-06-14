@@ -3,6 +3,8 @@
 /**
  * Module dependencies.
  */
+const config = require('./config/networkconf.json');
+console.log(config);
 
 var app = require('../app');
 var debug = require('debug')('app:server');
@@ -12,8 +14,8 @@ var http = require('http');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '9998');
-const ip = '10.0.2.15'
+var port = normalizePort(config.port);
+const ip = config.ip;
 app.set('port', port);
 app.set('ip', ip)
 
