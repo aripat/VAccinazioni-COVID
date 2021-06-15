@@ -19,7 +19,7 @@ DEFINE AR "GetCategoria_RedirectPoliVaccinali"
 		exists http.query["CF"]
 		exists http.query["TEAM"]
 		!exists http.query["categoria"]
-		// !exists http.cookie["validation"]
+		!exists http.cookie["validation"]
 	ACTION
 		MANAGE "getcategoria"
 	;
