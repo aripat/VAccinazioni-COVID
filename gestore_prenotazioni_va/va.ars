@@ -1,6 +1,7 @@
 DEFINE urlset all = { /* }; // */
 DEFINE urlset msvc_categoria = { /scopri_categoria, /scopri_categoria/* }; //*/
 DEFINE urlset msvc_home = { /, /home };
+DEFINE urlset msvc_prenotazione = { /prenota_appuntamento, /prenota_appuntamento/* }; //*/
 DEFINE set s = {}; 
 
 
@@ -37,6 +38,17 @@ DEFINE AR "RedirectPoliVaccinali"
         CALL is_valid_cookie WITH http.cookie["validation"]
 	ACTION
 		tcp.redirect "? to-application-server"
+	;
+
+// Dal client arriva una richiesta POST con ideti per prenotare un cerot appuntamento e la Va lo manda al server dopo aver validato il cookie
+DEFINE AR "RichiediPrenotazione"
+	CONDITION
+		//http.header["Method"] is "POST"
+		http.url is in msvc_prenotazione
+        exists http.cookie["validation"]
+        CALL is_valid_prenotazione_cookie WITH http.cookie["validation"]
+	ACTION
+		answer "Ciao"
 	;
 
 //TODO migliorare gestione errori #2 ( Qui valutare di mostrare una pagina di errore, con un link per home, senza controllare particolari condizioni)
@@ -94,4 +106,3 @@ DEFINE VR "Prenotazione"
 				CAT{"Utente ", cf, " visualizza correttamente i poli vaccinali per categoria ", categoria}
 			}
 	);
-	
