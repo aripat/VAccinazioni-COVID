@@ -1,10 +1,8 @@
-CAT{validation=$1$cnfjekbg$6KKOezovmtUU1bhPz3fxE0; Expires}|
+CAT{/scopri_categoria/poli_vaccinali.html cf=RZZLSF98 team=0000000000000}|
 
-CAT{http://172.17.0.2:8888/scopri_categoria/poli_vaccinali.html?TEAM=0000000000000&CF=RZZLSF98&categoria=Evalidation=$1$cnfjekbg$6KKOezovmtUU1bhPz3fxE0; Expires}|
+CAT{http://127.0.0.1:8888/scopri_categoria/poli_vaccinali.html?TEAM=0000000000000&CF=RZZLSF98&categoria=E validation=validation=$1$cnfjekbg$6KKOezovmtUU1bhPz3fxE0; Expires=Tue, 15  Jun 2021 15:15:01}|
 
-CAT{http://172.17.0.2:8888/scopri_categoria/poli_vaccinali.html?TEAM=0000000000000&CF=RZZLSF98&categoria=E validation=$1$cnfjekbg$6KKOezovmtUU1bhPz3fxE0; Expires set cookie giusto validation=$1$cnfjekbg$6KKOezovmtUU1bhPz3fxE0; Expires=Mon, 14  Jun 2021 18:38:52}|
+CAT{/scopri_categoria/poli_vaccinali.html cf=RZZLSF98 team=0000000000000}|
 
-CAT{http://172.17.0.2:8888/scopri_categoria/poli_vaccinali.html?TEAM=0000000000000&CF=RZZLSF98&categoria=E validation=$1$cnfjekbg$6KKOezovmtUU1bhPz3fxE0; Expires set cookie giusto validation=$1$cnfjekbg$6KKOezovmtUU1bhPz3fxE0; Expires=Mon, 14  Jun 2021 18:40:13}|
-
-CAT{http://172.17.0.2:8888/scopri_categoria/poli_vaccinali.html?TEAM=0000000000000&CF=RZZLSF98&categoria=E validation=$1$cnfjekbg$6KKOezovmtUU1bhPz3fxE0; Expires set cookie giusto validation=$1$cnfjekbg$6KKOezovmtUU1bhPz3fxE0; Expires=Mon, 14  Jun 2021 18:40:50}|
+CAT{http://127.0.0.1:8888/scopri_categoria/poli_vaccinali.html?TEAM=0000000000000&CF=RZZLSF98&categoria=E validation=validation=$1$cnfjekbg$6KKOezovmtUU1bhPz3fxE0; Expires=Tue, 15  Jun 2021 15:16:11}|
 
