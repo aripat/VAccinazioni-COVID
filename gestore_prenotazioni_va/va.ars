@@ -40,7 +40,7 @@ DEFINE AR "RedirectPoliVaccinali"
 		tcp.redirect "? to-application-server"
 	;
 
-// Dal client arriva una richiesta POST con ideti per prenotare un cerot appuntamento e la Va lo manda al server dopo aver validato il cookie
+// Dal client arriva una richiesta POST con i dati per prenotare un certo appuntamento e la Va lo manda al server dopo aver validato il cookie
 DEFINE AR "RichiediPrenotazione"
 	CONDITION
 		//http.method is http.method.POST
