@@ -43,7 +43,7 @@ DEFINE AR "RedirectPoliVaccinali"
 // Dal client arriva una richiesta POST con ideti per prenotare un cerot appuntamento e la Va lo manda al server dopo aver validato il cookie
 DEFINE AR "RichiediPrenotazione"
 	CONDITION
-		//http.header["Method"] is "POST"
+		//http.method is http.method.POST
 		http.url is in msvc_prenotazione
         exists http.cookie["validation"]
         CALL is_valid_prenotazione_cookie WITH http.cookie["validation"]
@@ -73,36 +73,36 @@ DEFINE VR "Prenotazione"
 		v_sid = net.sesid
 	ACTION
 		report prenotazione {CAT{http.url, " cf=", http.query["CF"], " team=", http.query["TEAM"] }}
-	NEXT(
-			obs.event is net.recv
-			http.answer.code is "302 Found"
-			net.sesid is v_sid
-		VAR 
-			valCookie = http.answer.header["Set-Cookie"]
-		ACTION
-			report prenotazione {
-				CAT {http.answer.header["Location"], " validation=", valCookie}
-				}
-		NEXT
-			obs.event is net.send
-			http.url is in msvc_categoria
-			http.query["CF"] is cf		//??
-			http.query["TEAM"] is team	//??
-			exists http.query["categoria"]
-			exists http.cookie["validation"]
-		VAR 
-			v_sid = net.sesid
-			categoria = http.query["categoria"]
-		ACTION
-			report prenotazione2 {
-				CAT{"Utente ", cf, " è in possesso del cookie e vuole raggiungere la categoria ", categoria}
-			}
-		NEXT
-			obs.event is net.recv
-			http.answer.code is "200 OK"
-			net.sesid is v_sid
-		ACTION
-			report prenotazione2 {
-				CAT{"Utente ", cf, " visualizza correttamente i poli vaccinali per categoria ", categoria}
-			}
-	);
+	NEXT
+		obs.event is net.recv
+		http.answer.code is "302 Found"
+		net.sesid is v_sid
+	VAR 
+		valCookie = http.answer.header["Set-Cookie"]
+	ACTION
+		report prenotazione {
+			CAT {http.answer.header["Location"], " validation=", valCookie}
+		}
+	NEXT
+		obs.event is net.send
+		http.url is in msvc_categoria
+		http.query["CF"] is cf		//??
+		http.query["TEAM"] is team	//??
+		exists http.query["categoria"]
+		exists http.cookie["validation"]
+	VAR 
+		v_sid = net.sesid
+		categoria = http.query["categoria"]
+	ACTION
+		report prenotazione2 {
+			CAT{"Utente ", cf, " è in possesso del cookie e vuole raggiungere la categoria ", categoria}
+		}
+	NEXT
+		obs.event is net.recv
+		http.answer.code is "200 OK"
+		net.sesid is v_sid
+	ACTION
+		report prenotazione2 {
+			CAT{"Utente ", cf, " visualizza correttamente i poli vaccinali per categoria ", categoria}
+		}
+	;

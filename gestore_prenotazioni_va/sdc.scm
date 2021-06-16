@@ -348,7 +348,7 @@ Every character in the key is significant.
 
 (defun Manage::errormanager (actionl pbuf)
   (eis::GiveHTTPAnswer 
-    "HTTP/1.1 421 Bad Request"
+    "HTTP/1.1 421 Custom Error:BAD REQUEST"
     ""
     ""
     ""
@@ -363,12 +363,12 @@ Every character in the key is significant.
 (defun-public is_valid_prenotazione_cookie (lista pbuf)
   (let
     (
-      (body (json-string->scm (string-upcase (mtfa-eis-get-current-body pbuf #t))))
+      (body (json-string->scm (mtfa-eis-get-current-body pbuf #t)))
       (validation_cookie (bytevector->string (car lista) "UTF-8"))
     )
-    (Show "method" (mtfa-eis-get-value-current-headers pbuf "Method"))
-    (Show "body" body)
-    (Show "validation_cookie " validation_cookie)
+    (Show "method -> " (mtfa-eis-get-current-method pbuf ))
+    (Show "body -> " body)
+    (Show "validation_cookie -> " validation_cookie)
     #t
   )
 )
