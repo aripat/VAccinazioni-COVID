@@ -1,13 +1,16 @@
 DEFINE urlset all = { /* }; // */
 DEFINE urlset msvc_categoria = { /scopri_categoria, /scopri_categoria/* }; //*/
-DEFINE urlset msvc_home = { /, /home }; 
+DEFINE urlset msvc_home = { /, /home };
+DEFINE urlset msvc_prenotazione = { /prenota_appuntamento, /prenota_appuntamento/* }; //*/
+DEFINE set s = {}; 
+
 
 // Redirect verso la Home Page
 DEFINE AR "GoHome"
 	CONDITION
 		http.url is in msvc_home
 	ACTION
-		tcp.redirect "10.0.2.15:9998"
+		tcp.redirect "? to-application-server"
 	;
 
 // TODO migliorare gestione errori #1 (se utente non ha cookie va comunque recuperata la categoria e validata)
@@ -18,7 +21,7 @@ DEFINE AR "GetCategoria_RedirectPoliVaccinali"
 		exists http.query["CF"]
 		exists http.query["TEAM"]
 		!exists http.query["categoria"]
-		// !exists http.cookie["validation"]
+		!exists http.cookie["validation"]
 	ACTION
 		MANAGE "getcategoria"
 	;
@@ -34,7 +37,18 @@ DEFINE AR "RedirectPoliVaccinali"
         exists http.cookie["validation"]
         CALL is_valid_cookie WITH http.cookie["validation"]
 	ACTION
-		tcp.redirect "10.0.2.15:9998"
+		tcp.redirect "? to-application-server"
+	;
+
+// Dal client arriva una richiesta POST con ideti per prenotare un cerot appuntamento e la Va lo manda al server dopo aver validato il cookie
+DEFINE AR "RichiediPrenotazione"
+	CONDITION
+		//http.header["Method"] is "POST"
+		http.url is in msvc_prenotazione
+        exists http.cookie["validation"]
+        CALL is_valid_prenotazione_cookie WITH http.cookie["validation"]
+	ACTION
+		answer "Ciao"
 	;
 
 //TODO migliorare gestione errori #2 ( Qui valutare di mostrare una pagina di errore, con un link per home, senza controllare particolari condizioni)
@@ -45,3 +59,50 @@ DEFINE AR "ErrorHandlerVAlidation"
 		MANAGE "errormanager"
 	;
 
+//TODO verficare che funzioni
+DEFINE VR "Prenotazione"
+	CONDITION
+		http.url is in msvc_categoria
+		exists http.query["CF"]
+		exists http.query["TEAM"]
+		!exists http.query["categoria"]
+		!exists http.cookie["validation"]
+	VAR
+		cf = http.query["CF"]
+		team = http.query["TEAM"]
+		v_sid = net.sesid
+	ACTION
+		report prenotazione {CAT{http.url, " cf=", http.query["CF"], " team=", http.query["TEAM"] }}
+	NEXT(
+			obs.event is net.recv
+			http.answer.code is "302 Found"
+			net.sesid is v_sid
+		VAR 
+			valCookie = http.answer.header["Set-Cookie"]
+		ACTION
+			report prenotazione {
+				CAT {http.answer.header["Location"], " validation=", valCookie}
+				}
+		NEXT
+			obs.event is net.send
+			http.url is in msvc_categoria
+			http.query["CF"] is cf		//??
+			http.query["TEAM"] is team	//??
+			exists http.query["categoria"]
+			exists http.cookie["validation"]
+		VAR 
+			v_sid = net.sesid
+			categoria = http.query["categoria"]
+		ACTION
+			report prenotazione2 {
+				CAT{"Utente ", cf, " è in possesso del cookie e vuole raggiungere la categoria ", categoria}
+			}
+		NEXT
+			obs.event is net.recv
+			http.answer.code is "200 OK"
+			net.sesid is v_sid
+		ACTION
+			report prenotazione2 {
+				CAT{"Utente ", cf, " visualizza correttamente i poli vaccinali per categoria ", categoria}
+			}
+	);

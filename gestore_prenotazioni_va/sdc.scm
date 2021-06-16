@@ -260,7 +260,8 @@ followed by 22 characters from the alphabet ./0-9A-Za-z, up to 34 characters tot
 Every character in the key is significant.
 |#
 (define salt "$1$cnfjekbg$")
-(define db (db-interface::set-db-coordinates "127.0.0.1" "root" "" "arpr" 3306))
+;;TODO read from file!
+(define db (db-interface::set-db-coordinates "10.0.2.15" "va" "va" "arpr" 3306))
 
 ;; valida il cookie inviato 
 (defun-public is_valid_cookie (lista pbuf)
@@ -276,16 +277,12 @@ Every character in the key is significant.
   )
 )
 
+;;TODO read from file!
 (define app::server::ip "10.0.2.15")
 (define app::server::port "9998")
 
-;; not used
-(define (gopolivaccinali pbuf)
-   (string-append app::server::ip ":" app::server::port)
 
-)
-;; not used
-(define (gohome pbuf)
+(define (to-application-server pbuf)
   (string-append app::server::ip ":" app::server::port)
 )
 
@@ -336,7 +333,7 @@ Every character in the key is significant.
         )
         (string-append  "Set-Cookie: validation=" 
                         (crypt (string-append codice_fiscale ":" categoria_rischio) salt)
-                        "; Expires=" (date->string (current-date 3600) "~a, ~d  ~b ~Y ~T")
+                        "; Path=/ ; Expires=" (date->string (current-date 3600) "~a, ~d  ~b ~Y ~T")
         )
         ""
       )
@@ -351,7 +348,7 @@ Every character in the key is significant.
 
 (defun Manage::errormanager (actionl pbuf)
   (eis::GiveHTTPAnswer 
-    "HTTP/1.1 400 Bad Request"
+    "HTTP/1.1 421 Bad Request"
     ""
     ""
     ""
@@ -360,3 +357,18 @@ Every character in the key is significant.
 
 ;;HOOK "errormanager"
 (eis::function-pointer-add "errormanager" Manage::errormanager)
+
+
+;; valida il cookie inviato per prenotare la 
+(defun-public is_valid_prenotazione_cookie (lista pbuf)
+  (let
+    (
+      (body (json-string->scm (string-upcase (mtfa-eis-get-current-body pbuf #t))))
+      (validation_cookie (bytevector->string (car lista) "UTF-8"))
+    )
+    (Show "method" (mtfa-eis-get-value-current-headers pbuf "Method"))
+    (Show "body" body)
+    (Show "validation_cookie " validation_cookie)
+    #t
+  )
+)
