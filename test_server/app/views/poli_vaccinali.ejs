@@ -1,61 +1,39 @@
-<%- include("partials/header", {title: title, scripts:undefined})%>
+<%- include("partials/header", {title: title, scripts:undefined});%>
 <h1>Poli vaccinali</h1>
 <p>Per categoria...</p>
 <div class="accordion" id="accordionExample">
-    <div class="card">
-        <div class="card-header" id="headingOne">
-        <h5 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-            Giorno #1
-            </button>
-        </h5>
+    <%  erogazioni = {}
+        for (let i = 0; i < results.length; i++){
+            if (erogazioni[results[i]['data']] == undefined)
+                erogazioni[results[i]['data']] = []
+            erogazioni[results[i]['data']].push(results[i])
+        }
+        const days = Object.keys(erogazioni);
+        for( let i = 0; i < days.length; i++ ) {%>
+            <div class="card">
+                <div class="card-header" id="heading<%= days[i]%>">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse<%= days[i]%>" aria-expanded="true" aria-controls="collapse<%= days[i]%>">
+                    <%= days[i]%>
+                    </button>
+                </h5>
+            </div>
+            <div id="collapse<%= days[i]%>" class="collapse"         aria-labelledby="heading<%= days[i]%>" data-parent="#accordionExample">
+                <div class="card-body card-erogazioni">
+                    <%for(let j = 0; j < erogazioni[days[i]].length; j++ ) {
+                        var erogazione= erogazioni[days[i]][j];%>
+                        <div class="card">
+                            <h4 class="card-header"><%= erogazione["polo_vaccinale"]%></h4>
+                            <p style="padding: 5px 10px"><%= erogazione["data"]%></p>
+                            <p style="padding: 5px 10px"><%= erogazione["ora"]%></p>
+                            <p style="padding: 5px 10px"><%= erogazione["vaccino"]%></p>
+                            <button class="btn btn-primary">Procedi</button>
+                        </div>
+                    <% }%>    
+                </div>
+                </div>
+            </div>
         </div>
-    
-        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-        <div class="card-body">
-            <ul>
-                <li>Orario #1</li>
-                <li>Orario #2</li>
-                <li>Orario #3</li>
-            </ul>
-        </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-header" id="headingTwo">
-        <h5 class="mb-0">
-            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-            Giorno #2
-            </button>
-        </h5>
-        </div>
-        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-        <div class="card-body">
-            <ul>
-                <li>Orario #1</li>
-                <li>Orario #2</li>
-                <li>Orario #3</li>
-            </ul>
-        </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-header" id="headingThree">
-        <h5 class="mb-0">
-            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-            Giorno #3
-            </button>
-        </h5>
-        </div>
-        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
-        <div class="card-body">
-            <ul>
-                <li>Orario #1</li>
-                <li>Orario #2</li>
-                <li>Orario #3</li>
-            </ul>
-        </div>
-        </div>
-    </div>
-    </div>
+    <% } %>
+</div>
 <%- include("partials/footer")%>

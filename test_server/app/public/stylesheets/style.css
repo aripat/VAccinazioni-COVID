@@ -6,3 +6,15 @@ body {
 a {
   color: #00B7FF;
 }
+/*poli vaccinali*/
+.card-erogazioni{
+  positions: relative; display: flex; align-items: flex-start; flex-direction: row; flex-wrap: wrap;
+}
+
+.card-erogazioni>.card{
+  margin: 10px auto; min-width: 200px; min-height: 200px; width: 30%;
+}
+
+.card-erogazioni>.card> button{
+  position: absolute; right: 10px; bottom:10px;
+}
