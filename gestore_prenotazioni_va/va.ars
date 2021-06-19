@@ -13,17 +13,8 @@ DEFINE AR "GoHome"
 		tcp.redirect "? to-application-server"
 	;
 
-// // Redirect verso la Home Page
-// DEFINE AR "GoHome"
-// 	CONDITION
-// 		http.url is in all
-// 	ACTION
-// 		tcp.redirect "? to-application-server"
-// 	;
-
-// TODO migliorare gestione errori #1 (se utente non ha cookie va comunque recuperata la categoria e validata)
 // Recupera la categoria di rischio per l'utente e la valida tramite cookie
-DEFINE AR "GetCategoria_RedirectPoliVaccinali"
+DEFINE AR "GetCategoriaRischio"
 	CONDITION
 		http.url is in msvc_categoria
 		exists http.query["CF"]
@@ -36,7 +27,7 @@ DEFINE AR "GetCategoria_RedirectPoliVaccinali"
 
 
 // Effettua il redirect verso la pagina dei Poli Vaccinali sse la categoria e' stata validata dalla VA
-DEFINE AR "RedirectPoliVaccinali"
+DEFINE AR "RedirectToPoliVaccinali"
 	CONDITION
 		http.url is in msvc_categoria
 		exists http.query["CF"]
@@ -48,15 +39,15 @@ DEFINE AR "RedirectPoliVaccinali"
 		tcp.redirect "? to-application-server"
 	;
 
-// Dal client arriva una richiesta POST con i dati per prenotare un certo appuntamento e la Va lo manda al server dopo aver validato il cookie
+// Dal client arriva una richiesta POST con i dati per prenotare un certo appuntamento, la Va lo direziona verso il server dopo aver validato il cookie
 DEFINE AR "RichiediPrenotazione"
 	CONDITION
-		//http.method is http.method.POST
+		CALL is_request_method WITH "POST"
 		http.url is in msvc_prenotazione
         exists http.cookie["validation"]
-        CALL is_valid_prenotazione_cookie WITH http.cookie["validation"]
+        CALL is_valid_cookie WITH http.cookie["validation"]
 	ACTION
-		answer "Ciao"
+		tcp.redirect "? to-application-server"
 	;
 
 //TODO migliorare gestione errori #2 ( Qui valutare di mostrare una pagina di errore, con un link per home, senza controllare particolari condizioni)
@@ -68,7 +59,7 @@ DEFINE AR "ErrorHandlerVAlidation"
 	;
 
 //TODO verficare che funzioni
-DEFINE VR "Prenotazione"
+DEFINE VR "ReportPrenotazione"
 	CONDITION
 		obs.event is net.send
 		http.url is in msvc_categoria

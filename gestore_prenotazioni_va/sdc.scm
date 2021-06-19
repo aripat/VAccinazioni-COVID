@@ -267,14 +267,28 @@ Every character in the key is significant.
 (defun-public is_valid_cookie (lista pbuf)
   (let
     (
-      (codice_fiscale (string-upcase (mtfa-eis-get-value-current-query pbuf "CF")))
-      (categoria_rischio (string-upcase (mtfa-eis-get-value-current-query pbuf "categoria")))
+      (codice_fiscale "")
+      (categoria_rischio "")
       (validation_cookie (bytevector->string (car lista) "UTF-8"))
     )
-    (Show "str compare with validation_cookie " (equal? (crypt (string-append codice_fiscale ":" categoria_rischio) salt) validation_cookie))
-    (Show "validation_cookie " (crypt (string-append codice_fiscale ":" categoria_rischio) salt))
+    (if (equal? (mtfa-eis-get-current-method pbuf) "GET")
+      (begin
+        (set! codice_fiscale (string-upcase (mtfa-eis-get-value-current-query pbuf "CF")))
+        (set! categoria_rischio (string-upcase (mtfa-eis-get-value-current-query pbuf "categoria")))
+      )
+      (begin
+        (set! codice_fiscale (cdr (list-ref (json-string->scm (mtfa-eis-get-current-body pbuf #t)) 1)))
+        (set! categoria_rischio (cdr (list-ref (json-string->scm (mtfa-eis-get-current-body pbuf #t)) 2)))
+      )
+    )
+    ;;(Show "str compare with validation_cookie " (equal? (crypt (string-append codice_fiscale ":" categoria_rischio) salt) validation_cookie))
+    ;;(Show "validation_cookie " (crypt (string-append codice_fiscale ":" categoria_rischio) salt))
     (equal? (crypt (string-append codice_fiscale ":" categoria_rischio) salt) validation_cookie)
   )
+)
+
+(defun-public is_request_method (lista pbuf)
+  (equal? (mtfa-eis-get-current-method pbuf) (bytevector->string (car lista) "UTF-8"))
 )
 
 ;;TODO read from file!
@@ -357,18 +371,3 @@ Every character in the key is significant.
 
 ;;HOOK "errormanager"
 (eis::function-pointer-add "errormanager" Manage::errormanager)
-
-
-;; valida il cookie inviato per prenotare la 
-(defun-public is_valid_prenotazione_cookie (lista pbuf)
-  (let
-    (
-      (body (json-string->scm (mtfa-eis-get-current-body pbuf #t)))
-      (validation_cookie (bytevector->string (car lista) "UTF-8"))
-    )
-    (Show "method -> " (mtfa-eis-get-current-method pbuf ))
-    (Show "body -> " body)
-    (Show "validation_cookie -> " validation_cookie)
-    #t
-  )
-)
