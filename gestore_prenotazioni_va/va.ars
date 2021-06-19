@@ -13,6 +13,14 @@ DEFINE AR "GoHome"
 		tcp.redirect "? to-application-server"
 	;
 
+// // Redirect verso la Home Page
+// DEFINE AR "GoHome"
+// 	CONDITION
+// 		http.url is in all
+// 	ACTION
+// 		tcp.redirect "? to-application-server"
+// 	;
+
 // TODO migliorare gestione errori #1 (se utente non ha cookie va comunque recuperata la categoria e validata)
 // Recupera la categoria di rischio per l'utente e la valida tramite cookie
 DEFINE AR "GetCategoria_RedirectPoliVaccinali"
@@ -62,6 +70,7 @@ DEFINE AR "ErrorHandlerVAlidation"
 //TODO verficare che funzioni
 DEFINE VR "Prenotazione"
 	CONDITION
+		obs.event is net.send
 		http.url is in msvc_categoria
 		exists http.query["CF"]
 		exists http.query["TEAM"]
@@ -72,6 +81,7 @@ DEFINE VR "Prenotazione"
 		team = http.query["TEAM"]
 		v_sid = net.sesid
 	ACTION
+		ADD "step1" to set s
 		report prenotazione {CAT{http.url, " cf=", http.query["CF"], " team=", http.query["TEAM"] }}
 	NEXT
 		obs.event is net.recv
@@ -80,6 +90,7 @@ DEFINE VR "Prenotazione"
 	VAR 
 		valCookie = http.answer.header["Set-Cookie"]
 	ACTION
+		ADD "step2" to set s
 		report prenotazione {
 			CAT {http.answer.header["Location"], " validation=", valCookie}
 		}
@@ -94,7 +105,8 @@ DEFINE VR "Prenotazione"
 		v_sid = net.sesid
 		categoria = http.query["categoria"]
 	ACTION
-		report prenotazione2 {
+		ADD "step3" to set s
+		report prenotazione {
 			CAT{"Utente ", cf, " è in possesso del cookie e vuole raggiungere la categoria ", categoria}
 		}
 	NEXT
@@ -102,7 +114,10 @@ DEFINE VR "Prenotazione"
 		http.answer.code is "200 OK"
 		net.sesid is v_sid
 	ACTION
-		report prenotazione2 {
+		ADD "step4" to set s
+		report prenotazione {
 			CAT{"Utente ", cf, " visualizza correttamente i poli vaccinali per categoria ", categoria}
 		}
 	;
+
+

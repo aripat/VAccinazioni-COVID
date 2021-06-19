@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 16, 2021 at 09:57 AM
+-- Generation Time: Jun 19, 2021 at 06:23 PM
 -- Server version: 10.4.19-MariaDB
 -- PHP Version: 7.3.28
 
@@ -34,6 +34,30 @@ CREATE TABLE `erogazione` (
   `data` char(10) NOT NULL,
   `ora` char(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `erogazione`
+--
+
+INSERT INTO `erogazione` (`id_erogazione`, `polo_vaccinale`, `vaccino`, `data`, `ora`) VALUES
+(3, 'ColleferroAuditorium', 'Pfizer', '2021-07-10', '14:15'),
+(4, 'ColleferroAuditorium', 'Pfizer', '2021-07-31', '14:15'),
+(5, 'ColleferroAuditorium', 'Pfizer', '2021-07-09', '14:15'),
+(6, 'ColleferroAuditorium', 'Pfizer', '2021-07-30', '14:15'),
+(7, 'ColleferroAuditorium', 'Pfizer', '2021-07-08', '14:15'),
+(8, 'ColleferroAuditorium', 'Pfizer', '2021-07-29', '14:15'),
+(9, 'ColleferroAuditorium', 'Pfizer', '2021-07-10', '14:00'),
+(10, 'ColleferroAuditorium', 'Pfizer', '2021-07-31', '14:00'),
+(11, 'ColleferroAuditorium', 'Pfizer', '2021-07-09', '14:00'),
+(12, 'ColleferroAuditorium', 'Pfizer', '2021-07-30', '14:00'),
+(13, 'ColleferroAuditorium', 'Pfizer', '2021-07-08', '14:00'),
+(14, 'ColleferroAuditorium', 'Pfizer', '2021-07-29', '14:00'),
+(15, 'ColleferroAuditorium', 'Pfizer', '2021-07-10', '13:45'),
+(16, 'ColleferroAuditorium', 'Pfizer', '2021-07-31', '13:45'),
+(17, 'ColleferroAuditorium', 'Pfizer', '2021-07-09', '13:45'),
+(18, 'ColleferroAuditorium', 'Pfizer', '2021-07-30', '13:45'),
+(19, 'ColleferroAuditorium', 'Pfizer', '2021-07-08', '13:45'),
+(20, 'ColleferroAuditorium', 'Pfizer', '2021-07-29', '13:45');
 
 -- --------------------------------------------------------
 
@@ -115,7 +139,7 @@ ALTER TABLE `vaccino_per_categoria`
 -- AUTO_INCREMENT for table `erogazione`
 --
 ALTER TABLE `erogazione`
-  MODIFY `id_erogazione` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_erogazione` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- Constraints for dumped tables

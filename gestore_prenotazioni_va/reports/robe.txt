@@ -1,0 +1,48 @@
+$1$cnfjekbg$6KKOezovmtUU1bhPz3fxE0CAT
+
+// DEFINE VR "Prenotazione"
+// 	CONDITION
+// 		http.url is in msvc_categoria
+// 		exists http.query["CF"]
+// 		exists http.query["TEAM"]
+// 		!exists http.query["categoria"]
+// 		!exists http.cookie["validation"]
+// 	VAR
+// 		cf = http.query["CF"]
+// 		team = http.query["TEAM"]
+// 		v_sid = net.sesid
+// 	ACTION
+// 		report prenotazione {CAT{http.url, " cf=", http.query["CF"], " team=", http.query["TEAM"] }}
+// 	NEXT
+// 		obs.event is net.recv
+// 		http.answer.code is "302 Found"
+// 		net.sesid is v_sid
+// 	VAR 
+// 		valCookie = http.answer.header["Set-Cookie"]
+// 	ACTION
+// 		report prenotazione {
+// 			CAT {http.answer.header["Location"], " validation=", valCookie}
+// 		}
+// 	NEXT
+// 		obs.event is net.send
+// 		http.url is in msvc_categoria
+// 		http.query["CF"] is cf		
+// 		http.query["TEAM"] is team	
+// 		exists http.query["categoria"]
+// 		exists http.cookie["validation"]
+// 	VAR 
+// 		v_sid = net.sesid
+// 		categoria = http.query["categoria"]
+// 	ACTION
+// 		report prenotazione {
+// 			CAT{"Utente ", cf, " è in possesso del cookie e vuole raggiungere la categoria ", categoria}
+// 		}
+// 	NEXT
+// 		obs.event is net.recv
+// 		http.answer.code is "200 OK"
+// 		net.sesid is v_sid
+// 	ACTION
+// 		report prenotazione {
+// 			CAT{"Utente ", cf, " visualizza correttamente i poli vaccinali per categoria ", categoria}
+// 		}
+// 	;
