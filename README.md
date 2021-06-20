@@ -4,8 +4,12 @@ Presentiamo qui un sistema a supporto della gestione delle prenotazioni per le v
 ## Istruzioni per avviare il sistema in locale
 
 OS: Ubuntu 20.* Virtual Machine
+
 Docker version: 20.10.5
+
 dozenapps/va image: versione aggiornata al 10/06/2021
+
+
 
 ### Frontend
 
@@ -17,11 +21,15 @@ Run del server
 
 `npm start`
 
+
+
 ### MySQL
 
 Per avviare i servizi xampp eseguire il comando
 
 `sudo /opt/lampp/xampp start`
+
+
 
 ### Validation Authority
 
