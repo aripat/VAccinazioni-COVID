@@ -277,15 +277,18 @@ Every character in the key is significant.
         (set! categoria_rischio (string-upcase (mtfa-eis-get-value-current-query pbuf "categoria")))
       )
       (begin
-        (set! codice_fiscale (cdr (list-ref (json-string->scm (mtfa-eis-get-current-body pbuf #t)) 1)))
-        (set! categoria_rischio (cdr (list-ref (json-string->scm (mtfa-eis-get-current-body pbuf #t)) 2)))
+        (set! codice_fiscale (second (string-split (first (string-split (mtfa-eis-get-current-body pbuf #t) #\&)) #\=) ) )
+        (set! categoria_rischio (second (string-split (second (string-split (mtfa-eis-get-current-body pbuf #t) #\&)) #\=) ) )
       )
     )
-    ;;(Show "str compare with validation_cookie " (equal? (crypt (string-append codice_fiscale ":" categoria_rischio) salt) validation_cookie))
+    (Show "codice_fiscale -> " codice_fiscale)
+    (Show "categoria_rischio -> " categoria_rischio)
+    (Show "str compare with validation_cookie " (equal? (crypt (string-append codice_fiscale ":" categoria_rischio) salt) validation_cookie))
     ;;(Show "validation_cookie " (crypt (string-append codice_fiscale ":" categoria_rischio) salt))
     (equal? (crypt (string-append codice_fiscale ":" categoria_rischio) salt) validation_cookie)
   )
 )
+
 
 (defun-public is_request_method (lista pbuf)
   (equal? (mtfa-eis-get-current-method pbuf) (bytevector->string (car lista) "UTF-8"))
@@ -299,6 +302,12 @@ Every character in the key is significant.
 (define (to-application-server pbuf)
   (string-append app::server::ip ":" app::server::port)
 )
+
+(define (from-body-CF pbuf)
+  (Show "sono in from-body-CF")
+  (string-append "ciao" "")
+)
+
 
 (define (KamRun key old-ret variables pbuf)
   ((eval-string (first (string-split variables #\ ))) pbuf)

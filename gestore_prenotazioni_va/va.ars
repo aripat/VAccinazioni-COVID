@@ -8,6 +8,7 @@ DEFINE set s = {};
 // Redirect verso la Home Page
 DEFINE AR "GoHome"
 	CONDITION
+		CALL is_request_method WITH "GET"
 		http.url is in msvc_home
 	ACTION
 		tcp.redirect "? to-application-server"
@@ -16,6 +17,7 @@ DEFINE AR "GoHome"
 // Recupera la categoria di rischio per l'utente e la valida tramite cookie
 DEFINE AR "GetCategoriaRischio"
 	CONDITION
+		CALL is_request_method WITH "GET"
 		http.url is in msvc_categoria
 		exists http.query["CF"]
 		exists http.query["TEAM"]
@@ -29,6 +31,7 @@ DEFINE AR "GetCategoriaRischio"
 // Effettua il redirect verso la pagina dei Poli Vaccinali sse la categoria e' stata validata dalla VA
 DEFINE AR "RedirectToPoliVaccinali"
 	CONDITION
+		CALL is_request_method WITH "GET"
 		http.url is in msvc_categoria
 		exists http.query["CF"]
 		exists http.query["categoria"]
@@ -40,12 +43,16 @@ DEFINE AR "RedirectToPoliVaccinali"
 	;
 
 // Dal client arriva una richiesta POST con i dati per prenotare un certo appuntamento, la Va lo direziona verso il server dopo aver validato il cookie
-DEFINE AR "RichiediPrenotazione"
+DEFINE AR "RichiestaPrenotazione"
 	CONDITION
 		CALL is_request_method WITH "POST"
 		http.url is in msvc_prenotazione
+		exists http.data["CF"]
+		exists http.data["categoria"]
+		exists http.data["TEAM"]
+		//dati prenotazione
         exists http.cookie["validation"]
-        CALL is_valid_cookie WITH http.cookie["validation"]
+        CALL is_valid_cookie WITH http.cookie["validation"] 
 	ACTION
 		tcp.redirect "? to-application-server"
 	;
@@ -59,7 +66,7 @@ DEFINE AR "ErrorHandlerVAlidation"
 	;
 
 //TODO verficare che funzioni
-DEFINE VR "ReportPrenotazione"
+DEFINE VR "ReportRichiestaPoliVaccinali"
 	CONDITION
 		obs.event is net.send
 		http.url is in msvc_categoria
@@ -73,7 +80,7 @@ DEFINE VR "ReportPrenotazione"
 		v_sid = net.sesid
 	ACTION
 		ADD "step1" to set s
-		report prenotazione {CAT{http.url, " cf=", http.query["CF"], " team=", http.query["TEAM"] }}
+		report richieste_poli_vaccinali {CAT{http.url, " cf=", http.query["CF"], " team=", http.query["TEAM"] }}
 	NEXT
 		obs.event is net.recv
 		http.answer.code is "302 Found"
@@ -82,7 +89,7 @@ DEFINE VR "ReportPrenotazione"
 		valCookie = http.answer.header["Set-Cookie"]
 	ACTION
 		ADD "step2" to set s
-		report prenotazione {
+		report richieste_poli_vaccinali {
 			CAT {http.answer.header["Location"], " validation=", valCookie}
 		}
 	NEXT
@@ -97,7 +104,7 @@ DEFINE VR "ReportPrenotazione"
 		categoria = http.query["categoria"]
 	ACTION
 		ADD "step3" to set s
-		report prenotazione {
+		report richieste_poli_vaccinali {
 			CAT{"Utente ", cf, " è in possesso del cookie e vuole raggiungere la categoria ", categoria}
 		}
 	NEXT
@@ -106,9 +113,44 @@ DEFINE VR "ReportPrenotazione"
 		net.sesid is v_sid
 	ACTION
 		ADD "step4" to set s
-		report prenotazione {
+		report richieste_poli_vaccinali {
 			CAT{"Utente ", cf, " visualizza correttamente i poli vaccinali per categoria ", categoria}
 		}
 	;
 
 
+DEFINE VR "ReportRichiestaPrenotazione"
+	CONDITION
+		http.url is in msvc_prenotazione
+		exists http.data["CF"]
+		exists http.data["categoria"]
+		exists http.data["TEAM"]
+		//dati prenotazione
+        exists http.cookie["validation"]
+	VAR
+		categoria =  http.data["categoria"]
+		cf = http.data["CF"]
+		v_sid = net.sesid
+	ACTION
+		report richieste_prenotazione {
+			CAT{"Utente ", cf, " richiede di prenotare per la categoria ", categoria, " presso ... in data ..."}
+		}
+	NEXT(
+		obs.event is net.recv
+		http.answer.code is "200 OK"
+		net.sesid is v_sid
+	ACTION
+		report richieste_poli_vaccinali {
+			CAT{"Utente ", cf, " ha correttamente prenotato presso ... in data ..."}
+		}
+	)
+	OR(
+		obs.event is net.recv
+		net.sesid is v_sid
+		http.answer.code is "404 Not Found"
+	ACTION
+		report richieste_poli_vaccinali {
+			CAT{"Utente ", cf, " non e' riuscito ad ultimare la prenotazione"}
+		}
+	)
+	;
