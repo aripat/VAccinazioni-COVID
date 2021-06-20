@@ -5,4 +5,6 @@ var connection = mysql.createConnection({
   password : 'portale_prenotazioni',
   database : 'prenotazioni_vaccinazioni'
 });
+
+connection.connect()
 module.exports = connection;

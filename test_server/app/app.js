@@ -3,7 +3,8 @@ var express = require('express');
 var path = require('path');
 
 var homeRouter = require('./routes/home');
-var portaleRouter = require('./routes/scopri_categoria');
+var poliVaccinaliRouter = require('./routes/scopri_categoria');
+var prenotazioniRouter = require('./routes/prenota_appuntamento');
 
 var app = express();
 
@@ -18,7 +19,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', homeRouter);
-app.use('/scopri_categoria', portaleRouter);
+app.use('/scopri_categoria', poliVaccinaliRouter);
+app.use('/prenota_appuntamento', prenotazioniRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -128,7 +128,7 @@ DEFINE VR "ReportRichiestaPrenotazione"
 		//dati prenotazione
         exists http.cookie["validation"]
 	VAR
-		categoria =  http.data["categoria"]
+		categoria = http.data["categoria"]
 		cf = http.data["CF"]
 		v_sid = net.sesid
 	ACTION
@@ -140,7 +140,7 @@ DEFINE VR "ReportRichiestaPrenotazione"
 		http.answer.code is "200 OK"
 		net.sesid is v_sid
 	ACTION
-		report richieste_poli_vaccinali {
+		report richieste_prenotazione {
 			CAT{"Utente ", cf, " ha correttamente prenotato presso ... in data ..."}
 		}
 	)
@@ -149,7 +149,7 @@ DEFINE VR "ReportRichiestaPrenotazione"
 		net.sesid is v_sid
 		http.answer.code is "404 Not Found"
 	ACTION
-		report richieste_poli_vaccinali {
+		report richieste_prenotazione {
 			CAT{"Utente ", cf, " non e' riuscito ad ultimare la prenotazione"}
 		}
 	)

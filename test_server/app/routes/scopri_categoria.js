@@ -3,7 +3,6 @@ var router = express.Router();
 var connection = require('../connection/makeconnection.js');
 
 /* GET users listing. */
-connection.connect(); //? forse errore
 
 router.get('/poli_vaccinali.html', function(req, res, next) {
   const categoria = req.query.categoria
