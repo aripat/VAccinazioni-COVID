@@ -264,6 +264,7 @@ Every character in the key is significant.
 (define db (db-interface::set-db-coordinates "10.0.2.15" "va" "va" "arpr" 3306))
 
 ;; valida il validation cookie inviato 
+;;TODO do not rely on first and second ... 
 (defun-public is_valid_cookie (lista pbuf)
   (let
     (
@@ -294,7 +295,6 @@ Every character in the key is significant.
   (equal? (mtfa-eis-get-current-method pbuf) (bytevector->string (car lista) "UTF-8"))
 )
 
-;;TODO read from file!
 (define app::server::ip "10.0.2.15")
 (define app::server::port "9998")
 

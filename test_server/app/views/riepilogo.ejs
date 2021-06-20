@@ -1,3 +1,32 @@
 <%- include("partials/header", {title: title, scripts:undefined})%>
     <h1>Riepilogo</h1>
+    <% const result = results[0];%>
+        <div class="card">
+            <div class="card-header" >
+                <h5>Richiesta #<%= result['numero_richiesta']%></h5>
+            </div>
+            <div class="card-body card-erogazioni">
+                    <p style="padding: 5px 10px">Polo vaccinale <%= result['polo_vaccinale']%></p>
+                    <p style="padding: 5px 10px">Data</p>
+                    <p style="padding: 5px 10px">Ora</p>
+                    <button id="deleteButton" class="btn btn-primary">Cancella</button>
+            </div>
+        </div>
+        <script>
+            var deleteButton = document.getElementById("deleteButton");
+            
+            deleteButton.addEventListener("click", function(){
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function(){
+                    if(this.readyState == 4){
+                        switch(this.status){
+                            case 200:
+                                console.log("eliminato")
+                        }
+                    }
+                };
+                xhr.open('DELETE', "http://127.0.0.1:8888/riepilogo/cancella_prenotazione"+window.location.search);
+                xhr.send();
+            })
+        </script>
 <%- include("partials/footer")%>
