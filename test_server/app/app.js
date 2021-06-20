@@ -5,6 +5,7 @@ var path = require('path');
 var homeRouter = require('./routes/home');
 var poliVaccinaliRouter = require('./routes/scopri_categoria');
 var prenotazioniRouter = require('./routes/prenota_appuntamento');
+var riepilogoRouter = require('./routes/riepilogo');
 
 var app = express();
 
@@ -21,6 +22,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', homeRouter);
 app.use('/scopri_categoria', poliVaccinaliRouter);
 app.use('/prenota_appuntamento', prenotazioniRouter);
+app.use('/riepilogo', riepilogoRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -35,7 +38,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error', { title: 'Error' });
+  res.render('errors');
 });
 
 module.exports = app;

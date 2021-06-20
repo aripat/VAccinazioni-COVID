@@ -61,6 +61,32 @@ DEFINE AR "RichiestaPrenotazione"
 	;
 
 
+// Recupera la categoria di rischio per l'utente e la valida tramite cookie
+DEFINE AR "GetRiepilogo"
+	CONDITION
+		CALL is_request_method WITH "GET"
+		http.url is in msvc_riepilogo
+		exists http.query["CF"]
+		exists http.query["TEAM"]
+		exists http.query["NUMERO_RICHIESTA"]
+		!exists http.cookie["session"]
+	ACTION
+		MANAGE "getriepilogo"
+	;
+
+DEFINE AR "RedirectToRiepilogo"
+	CONDITION
+		CALL is_request_method WITH "GET"
+		http.url is in msvc_riepilogo
+		exists http.query["CF"]
+		exists http.query["TEAM"]
+		exists http.query["NUMERO_RICHIESTA"]
+		exists http.cookie["session"]
+		CALL is_valid_session_cookie WITH http.cookie["session"] 
+	ACTION
+		tcp.redirect "? to-application-server"
+	;
+
 DEFINE AR "GoToErrorPage"
 	CONDITION
 		http.url is in error_page

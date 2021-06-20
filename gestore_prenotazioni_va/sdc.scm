@@ -263,7 +263,7 @@ Every character in the key is significant.
 ;;TODO read from file!
 (define db (db-interface::set-db-coordinates "10.0.2.15" "va" "va" "arpr" 3306))
 
-;; valida il cookie inviato 
+;; valida il validation cookie inviato 
 (defun-public is_valid_cookie (lista pbuf)
   (let
     (
@@ -384,3 +384,47 @@ Every character in the key is significant.
 
 ;;HOOK "errormanager"
 (eis::function-pointer-add "errormanager" Manage::errormanager)
+
+
+(defun Manage::getriepilogo (actionl pbuf)
+  (Show "getriepilogo is running")
+  (let
+    ( (codice_fiscale (string-upcase (mtfa-eis-get-value-current-query pbuf "CF")))
+      (team (mtfa-eis-get-value-current-query pbuf "TEAM"))
+      (numero_richiesta (mtfa-eis-get-value-current-query pbuf "NUMERO_RICHIESTA"))
+    )
+    (eis::GiveHTTPAnswer 
+        "HTTP/1.1 302 Found"
+        (string-append  "Location: " 
+                        "http://" (mtfa-eis-get-current-ip-dst pbuf) ":" (number->string (mtfa-eis-get-current-port-dst pbuf)) (mtfa-eis-get-current-uri pbuf)
+        )
+        (string-append  "Set-Cookie: session=" 
+                        (crypt (string-append codice_fiscale ":" numero_richiesta) salt)
+                        "; Path=/ "
+        )
+        ""
+    )
+  )
+)
+
+;;HOOK "getriepilogo"
+(eis::function-pointer-add "getriepilogo" Manage::getriepilogo)
+
+
+;; valida il session cookie inviato 
+(defun-public is_valid_session_cookie (lista pbuf)
+  (Show "is_valid_session_cookie is running")
+  (let
+    (
+      (codice_fiscale (string-upcase (mtfa-eis-get-value-current-query pbuf "CF")))
+      (team (mtfa-eis-get-value-current-query pbuf "TEAM"))
+      (numero_richiesta (mtfa-eis-get-value-current-query pbuf "NUMERO_RICHIESTA"))
+      (session_cookie (bytevector->string (car lista) "UTF-8"))
+    )
+    (Show "codice_fiscale -> " codice_fiscale)
+    (Show "numero_richiesta -> " numero_richiesta)
+    (Show "str compare with session_cookie " (equal? (crypt (string-append codice_fiscale ":" numero_richiesta) salt) session_cookie))
+    (equal? (crypt (string-append codice_fiscale ":" numero_richiesta) salt) session_cookie)
+  )
+)
+
