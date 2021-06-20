@@ -11,6 +11,14 @@ dozenapps/va image: versione aggiornata al 10/06/2021
 
 
 
+### MySQL
+
+Per avviare i servizi xampp eseguire il comando
+
+`sudo /opt/lampp/xampp start`
+
+
+
 ### Frontend
 
 Posizionarsi nella cartella `./test_server/app` e scaricare le dipendenze di nodejs
@@ -23,14 +31,6 @@ Run del server
 
 
 
-### MySQL
-
-Per avviare i servizi xampp eseguire il comando
-
-`sudo /opt/lampp/xampp start`
-
-
-
 ### Validation Authority
 
 Posizionarsi nella cartella `./gestore_prenotazioni_va` ed eseguire il comando
@@ -40,3 +40,8 @@ Posizionarsi nella cartella `./gestore_prenotazioni_va` ed eseguire il comando
 Dalla shell interattiva, per lanciare la VA mandare il comando
 
 `/va sdc.conf`
+
+
+### Accedere all'applicazione
+
+Raggiungere l'url http://127.0.0.1:8888 oppure http://127.0.0.1:8888/home
