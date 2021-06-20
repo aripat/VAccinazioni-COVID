@@ -371,10 +371,14 @@ Every character in the key is significant.
 
 (defun Manage::errormanager (actionl pbuf)
   (eis::GiveHTTPAnswer 
-    "HTTP/1.1 421 Custom Error:BAD REQUEST"
-    ""
-    ""
-    ""
+      "HTTP/1.1 302 Found"
+      (string-append  "Location: " 
+                      "http://" (mtfa-eis-get-current-ip-dst pbuf) ":" (number->string (mtfa-eis-get-current-port-dst pbuf)) 
+                      "/error_page"
+      )
+      (string-append  "Set-Cookie: validation=12334; Path=/ ; Expires=" (date->string (current-date 0) "~a, ~d  ~b ~Y ~T")
+      )
+      ""
   )
 )
 

@@ -2,6 +2,9 @@ DEFINE urlset all = { /* }; // */
 DEFINE urlset msvc_categoria = { /scopri_categoria, /scopri_categoria/* }; //*/
 DEFINE urlset msvc_home = { /, /home };
 DEFINE urlset msvc_prenotazione = { /prenota_appuntamento, /prenota_appuntamento/* }; //*/
+DEFINE urlset msvc_riepilogo = { /riepilogo, /riepilogo/* }; //*/
+DEFINE urlset error_page = { /error_page, /error_page/* }; //*/
+
 DEFINE set s = {}; 
 
 
@@ -57,7 +60,14 @@ DEFINE AR "RichiestaPrenotazione"
 		tcp.redirect "? to-application-server"
 	;
 
-//TODO migliorare gestione errori #2 ( Qui valutare di mostrare una pagina di errore, con un link per home, senza controllare particolari condizioni)
+
+DEFINE AR "GoToErrorPage"
+	CONDITION
+		http.url is in error_page
+	ACTION
+		tcp.redirect "? to-application-server"
+	;
+
 DEFINE AR "ErrorHandlerVAlidation"
 	CONDITION
 		http.url is in all

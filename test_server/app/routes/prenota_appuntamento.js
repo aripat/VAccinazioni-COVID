@@ -4,6 +4,7 @@ var connection = require('../connection/makeconnection.js');
 
 router.post('/', function(req, res, next) {
     //TODO INSERT
+    //TODO encrypt per generare numero prenotazione a 14 cifre
     connection.query('SELECT * FROM erogazione WHERE 1', function (error, results, fields) {
         console.log(results)
         
