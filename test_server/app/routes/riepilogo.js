@@ -9,6 +9,8 @@ router.get('/inserisci_dati', function(req, res, next) {
     res.render('inserisci_dati_riepilogo', { title: 'Inseirmento' });
   });
 
+// TODO id_erogazione NOT IN prenotazioni
+// TODO in ejs button submit + form in card
 router.get('/', function(req, res, next) {
     const codicefiscale = req.query.CF
     const team = req.query.TEAM

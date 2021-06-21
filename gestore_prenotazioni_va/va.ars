@@ -1,6 +1,7 @@
 DEFINE urlset all = { /* }; // */
 
 DEFINE urlset msvc_categoria = { /scopri_categoria, /scopri_categoria/* }; //*/
+//??
 DEFINE urlset msvc_insert_dati_categoria = { /scopri_categoria/inserisci_dati, /scopri_categoria/inserisci_dati/* }; //*/
 
 DEFINE urlset msvc_home = { /, /home };
@@ -8,6 +9,7 @@ DEFINE urlset msvc_home = { /, /home };
 DEFINE urlset msvc_prenotazione = { /prenota_appuntamento, /prenota_appuntamento/* }; //*/
 
 DEFINE urlset msvc_riepilogo = { /riepilogo, /riepilogo/* }; //*/
+//??
 DEFINE urlset msvc_insert_dati_riepilogo = { /riepilogo/inserisci_dati, /riepilogo/inserisci_dati/* }; //*/
 
 DEFINE urlset error_page = { /error_page, /error_page/* }; //*/
@@ -24,7 +26,7 @@ DEFINE AR "GoHome"
 		tcp.redirect "? to-application-server"
 	;
 
-
+//??
 //inserisci dati per prenotare
 DEFINE AR "GetCategoriaInserisciDati"
 	CONDITION
@@ -56,8 +58,8 @@ DEFINE AR "RedirectToPoliVaccinali"
 		CALL is_request_method WITH "GET"
 		http.url is in msvc_categoria
 		exists http.query["CF"]
-		exists http.query["categoria"]
 		exists http.query["TEAM"]
+		exists http.query["categoria"]
         exists http.cookie["validation"]
         CALL is_valid_cookie WITH http.cookie["validation"]
 	ACTION
@@ -79,7 +81,7 @@ DEFINE AR "RichiestaPrenotazione"
 		tcp.redirect "? to-application-server"
 	;
 
-
+//??
 //inserisci dati per ottenere il riepilogo
 DEFINE AR "GetRiepilogoInserisciDati"
 	CONDITION
@@ -144,6 +146,7 @@ DEFINE AR "ErrorHandlerVAlidation"
 		MANAGE "errormanager"
 	;
 
+
 //TODO verficare che funzioni
 DEFINE VR "ReportRichiestaPoliVaccinali"
 	CONDITION
@@ -159,7 +162,10 @@ DEFINE VR "ReportRichiestaPoliVaccinali"
 		v_sid = net.sesid
 	ACTION
 		ADD "step1" to set s
-		report richieste_poli_vaccinali {CAT{http.url, " cf=", http.query["CF"], " team=", http.query["TEAM"] }}
+		report richieste_poli_vaccinali {
+			CAT{
+				"---vsid = ", v_sid , "----" , http.url, " cf=", http.query["CF"], " team=", http.query["TEAM"] }
+			}
 	NEXT
 		obs.event is net.recv
 		http.answer.code is "302 Found"
@@ -169,7 +175,7 @@ DEFINE VR "ReportRichiestaPoliVaccinali"
 	ACTION
 		ADD "step2" to set s
 		report richieste_poli_vaccinali {
-			CAT {http.answer.header["Location"], " validation=", valCookie}
+			CAT {"---vsid = ", v_sid , "----" , http.answer.header["Location"], " validation=", valCookie}
 		}
 	NEXT
 		obs.event is net.send
@@ -184,7 +190,7 @@ DEFINE VR "ReportRichiestaPoliVaccinali"
 	ACTION
 		ADD "step3" to set s
 		report richieste_poli_vaccinali {
-			CAT{"Utente ", cf, " è in possesso del cookie e vuole raggiungere la categoria ", categoria}
+			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " è in possesso del cookie e vuole raggiungere la categoria ", categoria}
 		}
 	NEXT
 		obs.event is net.recv
@@ -193,7 +199,7 @@ DEFINE VR "ReportRichiestaPoliVaccinali"
 	ACTION
 		ADD "step4" to set s
 		report richieste_poli_vaccinali {
-			CAT{"Utente ", cf, " visualizza correttamente i poli vaccinali per categoria ", categoria}
+			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " visualizza correttamente i poli vaccinali per categoria ", categoria}
 		}
 	;
 
@@ -212,7 +218,7 @@ DEFINE VR "ReportRichiestaPrenotazione"
 		v_sid = net.sesid
 	ACTION
 		report richieste_prenotazione {
-			CAT{"Utente ", cf, " richiede di prenotare per la categoria ", categoria, " presso ... in data ..."}
+			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " richiede di prenotare per la categoria ", categoria, " presso ... in data ..."}
 		}
 	NEXT(
 		obs.event is net.recv
@@ -220,7 +226,7 @@ DEFINE VR "ReportRichiestaPrenotazione"
 		net.sesid is v_sid
 	ACTION
 		report richieste_prenotazione {
-			CAT{"Utente ", cf, " ha correttamente prenotato presso ... in data ..."}
+			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " ha correttamente prenotato presso ... in data ..."}
 		}
 	)
 	OR(
@@ -229,7 +235,43 @@ DEFINE VR "ReportRichiestaPrenotazione"
 		http.answer.code is "404 Not Found"
 	ACTION
 		report richieste_prenotazione {
-			CAT{"Utente ", cf, " non e' riuscito ad ultimare la prenotazione"}
+			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " non e' riuscito ad ultimare la prenotazione"}
+		}
+	)
+	;
+
+//TODO come accedere al metodo?
+DEFINE VR "ReportRichiestaDeletePrenotazione"
+	CONDITION
+		//http.method is "DELETE"
+		http.url is in msvc_riepilogo
+		exists http.query["CF"]
+		exists http.query["TEAM"]
+		exists http.query["NUMERO_RICHIESTA"]
+		exists http.cookie["session"]
+	VAR
+		cf = http.query["CF"]
+		numero_richiesta = http.query["NUMERO_RICHIESTA"]
+		v_sid = net.sesid
+	ACTION
+		report elimina_prenotazione {
+			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " richiede di eliminare la prenotazione #", numero_richiesta}
+		}
+	NEXT(
+		obs.event is net.recv
+		http.answer.code is "200 OK"
+		net.sesid is v_sid
+	ACTION
+		report elimina_prenotazione {
+			CAT{"---vsid = ", v_sid , "----" ,"Utente ", cf, " ha correttamente eliminato la prenotazione #", numero_richiesta}
+		}
+	)
+	OR(
+		obs.event is net.recv
+		net.sesid is v_sid
+	ACTION
+		report elimina_prenotazione {
+			CAT{"---vsid = ", v_sid , "----" ,"Utente ", cf, " non e' riuscito ad eliminare la prenotazione #", numero_richiesta}
 		}
 	)
 	;
