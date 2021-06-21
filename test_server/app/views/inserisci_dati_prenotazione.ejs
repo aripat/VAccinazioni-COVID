@@ -1,8 +1,18 @@
 <%- include("partials/header", {title: title, scripts:undefined})%>
-    <h1 style="margin-top:80px; padding:20px">Prenota Vaccino Covid-19</h1>
-    <h3 style="padding:20px">Il portale della Regione Lazio per prenotazione, consultazione e gestione dell’appuntamento per la vaccinazione covid-19.</h3>
-    <main style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
-        <h2>inserisci dati prenotazione</h2>
+    <main style="padding:20px; display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
+        <h4>Dati prenotazione</h4>
+        <p>Cercheremo per te la categoria di rischio a cui appartieni e mostreremo i poli vaccinali a disposizione nella Regione che hanno disponibilita' per un vaccino adatto alle tue condizioni di salute.</p>
+        <form method="GET" enctype="application/x-www-form-urlencoded" action="http://127.0.0.1:8888/scopri_categoria/poli_vaccinali.html">
+            <div class="form-group">
+              <label for="inputCF">Codice Fiscale</label>
+              <input type="text" class="form-control" id="inputCF" name="CF" placeholder="Inserisci il Codice Fiscale" required>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Codice TEAM</label>
+              <input type="text" class="form-control" aria-describedby="teamHelp" id="exampleInputPassword1" name="TEAM" placeholder="Inserisci il numero TEAM" required>
+              <small id="teamHelp" class="form-text text-muted">Sul retro della tessera sanitaria c'e' un numero, iserisci le ultime 13 cifre</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Invia</button>
+        </form>
     </main>
-    
 <%- include("partials/footer")%>

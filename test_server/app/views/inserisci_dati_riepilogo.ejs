@@ -1,8 +1,23 @@
 <%- include("partials/header", {title: title, scripts:undefined})%>
-    <h1 style="margin-top:80px; padding:20px">Prenota Vaccino Covid-19</h1>
-    <h3 style="padding:20px">Il portale della Regione Lazio per prenotazione, consultazione e gestione dell’appuntamento per la vaccinazione covid-19.</h3>
-    <main style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
-        <h2>inserisci dati riepilogo</h2>
+    <main style="padding:20px; display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
+        <h4>Dati riepilogo</h4>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae fuga quo incidunt doloribus perferendis. Libero recusandae vero mollitia est tempore enim cupiditate, reprehenderit perspiciatis nesciunt, impedit harum veritatis. Natus, optio?</p>
+        <form method="GET" enctype="application/x-www-form-urlencoded" action="http://127.0.0.1:8888/riepilogo">
+            <div class="form-group">
+              <label for="inputCF">Codice Fiscale</label>
+              <input type="text" class="form-control" id="inputCF" name="CF" placeholder="Inserisci il Codice Fiscale" required>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Codice TEAM</label>
+              <input type="text" class="form-control" aria-describedby="teamHelp" id="exampleInputPassword1" name="TEAM" placeholder="Inserisci il numero TEAM" required>
+              <small id="teamHelp" class="form-text text-muted">Sul retro della tessera sanitaria c'e' un numero, inserisci le ultime 13 cifre</small>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">Numero richiesta</label>
+                <input type="text" class="form-control" aria-describedby="teamHelp" id="exampleInputPassword1" name="NUMERO_RICHIESTA" placeholder="Inserisci il numero della richiesta" required>
+              </div>
+            <button type="submit" class="btn btn-primary">Invia</button>
+        </form>
     </main>
     
 <%- include("partials/footer")%>
