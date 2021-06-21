@@ -24,27 +24,28 @@
                         <div class="card-body" style="margin:10px auto; display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
                             <%for(let j = 0; j < erogazioni[days[i]].length; j++ ) {
                                 var erogazione= erogazioni[days[i]][j];%>
-                                <form class="card" style="padding: 30px; margin: 30px; min-width: 300px; width: calc(50% - 60px);" method="POST" enctype="application/x-www-form-urlencoded" action="http://127.0.0.1:8888/prenota-appuntamento">
+                                <form class="card" style="padding: 25px; margin: 30px; min-width: 300px; width: calc(50% - 60px);" method="POST" enctype="application/x-www-form-urlencoded" action="http://127.0.0.1:8888/prenota-appuntamento">
                                     <input type="hidden" name="CF" value='<%= codice_fiscale%>' required>
                                     <input type="hidden" name="categoria" value='<%= categoria%>' required>
                                     <input type="hidden" name="TEAM" value='<%= team %>' required>
+                                    <input type="hidden" name="id_erogazione" value='<%= erogazione["id_erogazione"] %>' required>
                                     
                                     <div class="form-group">
                                         <label for="polo_vaccinale">Polo Vaccinale</label>
-                                        <input type="text" class="form-control" id="polo_vaccinale" name="polo_vaccinale" value="><%= erogazione["polo_vaccinale"]%>" required readonly>
+                                        <input type="text" class="form-control" id="polo_vaccinale" name="polo_vaccinale" value="<%= erogazione["polo_vaccinale"]%>" required readonly>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="data">Data</label>
-                                        <input type="text" class="form-control" id="data" name="data" value="><%= erogazione["data"]%>" required readonly>
+                                        <input type="text" class="form-control" id="data" name="data" value="<%= erogazione["data"]%>" required readonly>
                                     </div>
                                     <div class="form-group">
                                         <label for="ora">Ora</label>
-                                        <input type="text" class="form-control" id="ora" name="ora" value="><%= erogazione["ora"]%>" required readonly>
+                                        <input type="text" class="form-control" id="ora" name="ora" value="<%= erogazione["ora"]%>" required readonly>
                                     </div>
                                     <div class="form-group">
                                         <label for="vaccino">Tipologia vaccino</label>
-                                        <input type="text" class="form-control" id="vaccino" name="vaccino" value="><%= erogazione["vaccino"]%>" required readonly>
+                                        <input type="text" class="form-control" id="vaccino" name="vaccino" value="<%= erogazione["vaccino"]%>" required readonly>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Invia</button>
                                 </form>
