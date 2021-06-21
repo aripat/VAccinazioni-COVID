@@ -9,7 +9,7 @@ router.post('/', function(req, res, next) {
         console.log(results)
         
         console.log("prenota appuntamto GET")
-        res.render('prenota_appuntamento', { title: 'Home' });
+        res.render('prenota-appuntamento', { title: 'Home' });
     });
 });
 

@@ -284,15 +284,10 @@ Every character in the key is significant.
     )
     (Show "codice_fiscale -> " codice_fiscale)
     (Show "categoria_rischio -> " categoria_rischio)
-    (Show "str compare with validation_cookie " (equal? (crypt (string-append codice_fiscale ":" categoria_rischio) salt) validation_cookie))
+    (Show "str compare with validation_cookie " (equal? (crypt (string-append codice_fiscale ":" categoria_rischio) salt) (uri-decode validation_cookie)))
     ;;(Show "validation_cookie " (crypt (string-append codice_fiscale ":" categoria_rischio) salt))
-    (equal? (crypt (string-append codice_fiscale ":" categoria_rischio) salt) validation_cookie)
+    (equal? (crypt (string-append codice_fiscale ":" categoria_rischio) salt) (uri-decode validation_cookie))
   )
-)
-
-
-(defun-public is_request_method (lista pbuf)
-  (equal? (mtfa-eis-get-current-method pbuf) (bytevector->string (car lista) "UTF-8"))
 )
 
 (define app::server::ip "10.0.2.15")
@@ -355,7 +350,7 @@ Every character in the key is significant.
                         "http://" (mtfa-eis-get-current-ip-dst pbuf) ":" (number->string (mtfa-eis-get-current-port-dst pbuf)) (mtfa-eis-get-current-uri pbuf) "&categoria=" categoria_rischio
         )
         (string-append  "Set-Cookie: validation=" 
-                        (crypt (string-append codice_fiscale ":" categoria_rischio) salt)
+                        (uri-encode (crypt (string-append codice_fiscale ":" categoria_rischio) salt))
                         "; Path=/ ; Expires=" (date->string (current-date 3600) "~a, ~d  ~b ~Y ~T")
         )
         ""
@@ -374,7 +369,7 @@ Every character in the key is significant.
       "HTTP/1.1 302 Found"
       (string-append  "Location: " 
                       "http://" (mtfa-eis-get-current-ip-dst pbuf) ":" (number->string (mtfa-eis-get-current-port-dst pbuf)) 
-                      "/error_page"
+                      "/error-page"
       )
       (string-append  "Set-Cookie: validation=12334; Path=/ ; Expires=" (date->string (current-date 0) "~a, ~d  ~b ~Y ~T")
       )
@@ -399,10 +394,11 @@ Every character in the key is significant.
                         "http://" (mtfa-eis-get-current-ip-dst pbuf) ":" (number->string (mtfa-eis-get-current-port-dst pbuf)) (mtfa-eis-get-current-uri pbuf)
         )
         (string-append  "Set-Cookie: session=" 
-                        (crypt (string-append codice_fiscale ":" numero_richiesta) salt)
+                        (uri-encode (crypt (string-append codice_fiscale ":" numero_richiesta) salt))
                         "; Path=/ "
         )
         ""
+        #t
     )
   )
 )
@@ -423,8 +419,8 @@ Every character in the key is significant.
     )
     (Show "codice_fiscale -> " codice_fiscale)
     (Show "numero_richiesta -> " numero_richiesta)
-    (Show "str compare with session_cookie " (equal? (crypt (string-append codice_fiscale ":" numero_richiesta) salt) session_cookie))
-    (equal? (crypt (string-append codice_fiscale ":" numero_richiesta) salt) session_cookie)
+    (Show "str compare with session_cookie " (equal? (crypt (string-append codice_fiscale ":" numero_richiesta) salt) (uri-decode session_cookie)))
+    (equal? (crypt (string-append codice_fiscale ":" numero_richiesta) salt) (uri-decode session_cookie))
   )
 )
 

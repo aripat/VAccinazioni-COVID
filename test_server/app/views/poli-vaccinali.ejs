@@ -1,0 +1,59 @@
+<%- include("partials/header", {title: title, scripts:undefined});%>
+<main style="padding:20px;">
+    <h4>Poli vaccinali</h4>
+    <p>Di seguito una lista dei poli vaccinali disponibili, divisi per giorno e selezionati in accordo alla tua categoria di rischio</p>
+    <div class="accordion" id="accordionPoliVaccinali">
+        <%  const {codice_fiscale, team, categoria} = identity;
+            erogazioni = {}
+            for (let i = 0; i < results.length; i++){
+                if (erogazioni[results[i]['data']] == undefined)
+                    erogazioni[results[i]['data']] = []
+                erogazioni[results[i]['data']].push(results[i])
+            }
+            const days = Object.keys(erogazioni);
+            for( let i = 0; i < days.length; i++ ) {%>
+                <div class="card">
+                    <div class="card-header" id="heading<%= days[i]%>">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse<%= days[i]%>" aria-expanded="true" aria-controls="collapse<%= days[i]%>">
+                            <%= days[i]%>
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapse<%= days[i]%>" class="collapse"  aria-labelledby="heading<%= days[i]%>" data-parent="#accordionPoliVaccinali">
+                        <div class="card-body" style="margin:10px auto; display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
+                            <%for(let j = 0; j < erogazioni[days[i]].length; j++ ) {
+                                var erogazione= erogazioni[days[i]][j];%>
+                                <form class="card" style="padding: 30px; margin: 30px; min-width: 300px; width: calc(50% - 60px);" method="POST" enctype="application/x-www-form-urlencoded" action="http://127.0.0.1:8888/prenota-appuntamento">
+                                    <input type="hidden" name="CF" value='<%= codice_fiscale%>' required>
+                                    <input type="hidden" name="categoria" value='<%= categoria%>' required>
+                                    <input type="hidden" name="TEAM" value='<%= team %>' required>
+                                    
+                                    <div class="form-group">
+                                        <label for="polo_vaccinale">Polo Vaccinale</label>
+                                        <input type="text" class="form-control" id="polo_vaccinale" name="polo_vaccinale" value="><%= erogazione["polo_vaccinale"]%>" required readonly>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="data">Data</label>
+                                        <input type="text" class="form-control" id="data" name="data" value="><%= erogazione["data"]%>" required readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="ora">Ora</label>
+                                        <input type="text" class="form-control" id="ora" name="ora" value="><%= erogazione["ora"]%>" required readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="vaccino">Tipologia vaccino</label>
+                                        <input type="text" class="form-control" id="vaccino" name="vaccino" value="><%= erogazione["vaccino"]%>" required readonly>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Invia</button>
+                                </form>
+                            <% }%>    
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</main>
+<%- include("partials/footer")%>

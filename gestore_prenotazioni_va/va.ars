@@ -1,18 +1,18 @@
 DEFINE urlset all = { /* }; // */
 
-DEFINE urlset msvc_categoria = { /scopri_categoria, /scopri_categoria/* }; //*/
+DEFINE urlset msvc_categoria = { /scopri-categoria, /scopri-categoria/*}; //*/
 //??
-DEFINE urlset msvc_insert_dati_categoria = { /scopri_categoria/inserisci_dati, /scopri_categoria/inserisci_dati/* }; //*/
+DEFINE urlset msvc_insert_dati_categoria = { /scopri-categoria/inserisci-dati, /scopri-categoria/inserisci-dati/* }; //*/
 
 DEFINE urlset msvc_home = { /, /home };
 
-DEFINE urlset msvc_prenotazione = { /prenota_appuntamento, /prenota_appuntamento/* }; //*/
+DEFINE urlset msvc_prenotazione = { /prenota-appuntamento, /prenota-appuntamento/* }; //*/
 
 DEFINE urlset msvc_riepilogo = { /riepilogo, /riepilogo/* }; //*/
 //??
-DEFINE urlset msvc_insert_dati_riepilogo = { /riepilogo/inserisci_dati, /riepilogo/inserisci_dati/* }; //*/
+DEFINE urlset msvc_insert_dati_riepilogo = { /riepilogo/inserisci-dati, /riepilogo/inserisci-dati/* }; //*/
 
-DEFINE urlset error_page = { /error_page, /error_page/* }; //*/
+DEFINE urlset error-page = { /error-page, /error-page/* }; //*/
 
 DEFINE set s = {}; 
 
@@ -20,7 +20,7 @@ DEFINE set s = {};
 // Redirect verso la Home Page
 DEFINE AR "GoHome"
 	CONDITION
-		CALL is_request_method WITH "GET"
+		http.method is http.GET
 		http.url is in msvc_home
 	ACTION
 		tcp.redirect "? to-application-server"
@@ -30,7 +30,7 @@ DEFINE AR "GoHome"
 //inserisci dati per prenotare
 DEFINE AR "GetCategoriaInserisciDati"
 	CONDITION
-		CALL is_request_method WITH "GET"
+		http.method is http.GET
 		http.url is in msvc_insert_dati_categoria
 		//la query deve essere vuota?
 	ACTION
@@ -41,7 +41,7 @@ DEFINE AR "GetCategoriaInserisciDati"
 // Recupera la categoria di rischio per l'utente e la valida tramite cookie
 DEFINE AR "GetCategoriaRischio"
 	CONDITION
-		CALL is_request_method WITH "GET"
+		http.method is http.GET
 		http.url is in msvc_categoria
 		exists http.query["CF"]
 		exists http.query["TEAM"]
@@ -55,7 +55,7 @@ DEFINE AR "GetCategoriaRischio"
 // Effettua il redirect verso la pagina dei Poli Vaccinali sse la categoria e' stata validata dalla VA
 DEFINE AR "RedirectToPoliVaccinali"
 	CONDITION
-		CALL is_request_method WITH "GET"
+		http.method is http.GET
 		http.url is in msvc_categoria
 		exists http.query["CF"]
 		exists http.query["TEAM"]
@@ -69,7 +69,7 @@ DEFINE AR "RedirectToPoliVaccinali"
 // Dal client arriva una richiesta POST con i dati per prenotare un certo appuntamento, la Va lo direziona verso il server dopo aver validato il cookie
 DEFINE AR "RichiestaPrenotazione"
 	CONDITION
-		CALL is_request_method WITH "POST"
+		http.method is http.POST
 		http.url is in msvc_prenotazione
 		exists http.data["CF"]
 		exists http.data["categoria"]
@@ -85,7 +85,7 @@ DEFINE AR "RichiestaPrenotazione"
 //inserisci dati per ottenere il riepilogo
 DEFINE AR "GetRiepilogoInserisciDati"
 	CONDITION
-		CALL is_request_method WITH "GET"
+		http.method is http.GET
 		http.url is in msvc_insert_dati_riepilogo
 		//la query deve essere vuota?
 	ACTION
@@ -96,7 +96,7 @@ DEFINE AR "GetRiepilogoInserisciDati"
 // Recupera la categoria di rischio per l'utente e la valida tramite cookie
 DEFINE AR "GetRiepilogo"
 	CONDITION
-		CALL is_request_method WITH "GET"
+		http.method is http.GET
 		http.url is in msvc_riepilogo
 		exists http.query["CF"]
 		exists http.query["TEAM"]
@@ -108,7 +108,7 @@ DEFINE AR "GetRiepilogo"
 
 DEFINE AR "RedirectToRiepilogo"
 	CONDITION
-		CALL is_request_method WITH "GET"
+		http.method is http.GET
 		http.url is in msvc_riepilogo
 		exists http.query["CF"]
 		exists http.query["TEAM"]
@@ -121,7 +121,7 @@ DEFINE AR "RedirectToRiepilogo"
 
 DEFINE AR "RichiestaDeletePrenotazione"
 	CONDITION
-		CALL is_request_method WITH "DELETE"
+		http.method is http.DELETE
 		http.url is in msvc_riepilogo
 		exists http.query["CF"]
 		exists http.query["TEAM"]
@@ -134,7 +134,7 @@ DEFINE AR "RichiestaDeletePrenotazione"
 
 DEFINE AR "GoToErrorPage"
 	CONDITION
-		http.url is in error_page
+		http.url is in error-page
 	ACTION
 		tcp.redirect "? to-application-server"
 	;
@@ -162,7 +162,7 @@ DEFINE VR "ReportRichiestaPoliVaccinali"
 		v_sid = net.sesid
 	ACTION
 		ADD "step1" to set s
-		report richieste_poli_vaccinali {
+		report richieste_poli-vaccinali {
 			CAT{
 				"---vsid = ", v_sid , "----" , http.url, " cf=", http.query["CF"], " team=", http.query["TEAM"] }
 			}
@@ -174,14 +174,14 @@ DEFINE VR "ReportRichiestaPoliVaccinali"
 		valCookie = http.answer.header["Set-Cookie"]
 	ACTION
 		ADD "step2" to set s
-		report richieste_poli_vaccinali {
+		report richieste_poli-vaccinali {
 			CAT {"---vsid = ", v_sid , "----" , http.answer.header["Location"], " validation=", valCookie}
 		}
 	NEXT
 		obs.event is net.send
 		http.url is in msvc_categoria
-		http.query["CF"] is cf		//??
-		http.query["TEAM"] is team	//??
+		http.query["cf"] is cf		//??
+		http.query["team"] is team	//??
 		exists http.query["categoria"]
 		exists http.cookie["validation"]
 	VAR 
@@ -189,7 +189,7 @@ DEFINE VR "ReportRichiestaPoliVaccinali"
 		categoria = http.query["categoria"]
 	ACTION
 		ADD "step3" to set s
-		report richieste_poli_vaccinali {
+		report richieste_poli-vaccinali {
 			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " è in possesso del cookie e vuole raggiungere la categoria ", categoria}
 		}
 	NEXT
@@ -198,7 +198,7 @@ DEFINE VR "ReportRichiestaPoliVaccinali"
 		net.sesid is v_sid
 	ACTION
 		ADD "step4" to set s
-		report richieste_poli_vaccinali {
+		report richieste_poli-vaccinali {
 			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " visualizza correttamente i poli vaccinali per categoria ", categoria}
 		}
 	;
@@ -206,6 +206,7 @@ DEFINE VR "ReportRichiestaPoliVaccinali"
 
 DEFINE VR "ReportRichiestaPrenotazione"
 	CONDITION
+		http.method is http.POST
 		http.url is in msvc_prenotazione
 		exists http.data["CF"]
 		exists http.data["categoria"]
@@ -243,7 +244,7 @@ DEFINE VR "ReportRichiestaPrenotazione"
 //TODO come accedere al metodo?
 DEFINE VR "ReportRichiestaDeletePrenotazione"
 	CONDITION
-		//http.method is "DELETE"
+		http.method is http.DELETE
 		http.url is in msvc_riepilogo
 		exists http.query["CF"]
 		exists http.query["TEAM"]

@@ -10,7 +10,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Home' });
 });
 
-router.get('/error_page', function(req, res, next) {
+router.get('/error-page', function(req, res, next) {
   res.render('error', { title: 'Error' });
 });
 

@@ -3,8 +3,8 @@ var express = require('express');
 var path = require('path');
 
 var homeRouter = require('./routes/home');
-var poliVaccinaliRouter = require('./routes/scopri_categoria');
-var prenotazioniRouter = require('./routes/prenota_appuntamento');
+var poliVaccinaliRouter = require('./routes/scopri-categoria');
+var prenotazioniRouter = require('./routes/prenota-appuntamento');
 var riepilogoRouter = require('./routes/riepilogo');
 
 var app = express();
@@ -20,8 +20,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', homeRouter);
-app.use('/scopri_categoria', poliVaccinaliRouter);
-app.use('/prenota_appuntamento', prenotazioniRouter);
+app.use('/scopri-categoria', poliVaccinaliRouter);
+app.use('/prenota-appuntamento', prenotazioniRouter);
 app.use('/riepilogo', riepilogoRouter);
 
 
