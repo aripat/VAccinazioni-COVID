@@ -4,6 +4,11 @@ var connection = require('../connection/makeconnection.js');
 
 /* GET users listing. */
 console.log("riepilogo loaded")
+
+router.get('/inserisci_dati', function(req, res, next) {
+    res.render('inserisci_dati_riepilogo', { title: 'Inseirmento' });
+  });
+
 router.get('/', function(req, res, next) {
     const codicefiscale = req.query.CF
     const team = req.query.TEAM

@@ -14,4 +14,8 @@ router.get('/poli_vaccinali.html', function(req, res, next) {
   });
 });
 
+router.get('/inserisci_dati', function(req, res, next) {
+  res.render('inserisci_dati_prenotazione', { title: 'Inserimento'});
+});
+
 module.exports = router;

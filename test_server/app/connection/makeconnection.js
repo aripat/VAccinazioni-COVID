@@ -6,5 +6,9 @@ var connection = mysql.createConnection({
   database : 'prenotazioni_vaccinazioni'
 });
 
-connection.connect()
+connection.connect((err) => {
+  if (err) throw err;
+  console.log("MySql Connected");
+});
 module.exports = connection;
+
