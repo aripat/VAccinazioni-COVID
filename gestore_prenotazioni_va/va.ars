@@ -12,10 +12,10 @@ DEFINE urlset msvc_riepilogo = { /riepilogo, /riepilogo/* }; //*/
 //??
 DEFINE urlset msvc_insert_dati_riepilogo = { /riepilogo/inserisci-dati, /riepilogo/inserisci-dati/* }; //*/
 
-DEFINE urlset error-page = { /error-page, /error-page/* }; //*/
+DEFINE urlset error-page = { /error-page, /error-page/*, /error-page-no-content, /error-page-no-content/* }; //*/
 
 DEFINE set s = {}; 
-
+DEFINE set ok_answer_codes = {"200 OK", "304 Not Modified"};
 
 // Redirect verso la Home Page
 DEFINE AR "GoHome"
@@ -39,6 +39,7 @@ DEFINE AR "GetCategoriaInserisciDati"
 	
 
 // Recupera la categoria di rischio per l'utente e la valida tramite cookie
+//TODO sistema applicazione con 204
 DEFINE AR "GetCategoriaRischio"
 	CONDITION
 		http.method is http.GET
@@ -74,7 +75,7 @@ DEFINE AR "RichiestaPrenotazione"
 		exists http.data["CF"]
 		exists http.data["categoria"]
 		exists http.data["TEAM"]
-		//dati prenotazione
+		//TODO dati prenotazione
         exists http.cookie["validation"]
         CALL is_valid_cookie WITH http.cookie["validation"] 
 	ACTION
@@ -147,7 +148,7 @@ DEFINE AR "ErrorHandlerVAlidation"
 	;
 
 
-//TODO verficare che funzioni
+//TODO cambia con info + discorsive i report e cancella gli step
 DEFINE VR "ReportRichiestaPoliVaccinali"
 	CONDITION
 		obs.event is net.send
@@ -162,11 +163,11 @@ DEFINE VR "ReportRichiestaPoliVaccinali"
 		v_sid = net.sesid
 	ACTION
 		ADD "step1" to set s
-		report richieste_poli-vaccinali {
+		report richieste-poli-vaccinali {
 			CAT{
 				"---vsid = ", v_sid , "----" , http.url, " cf=", cf, " team=", http.query["TEAM"] }
 			}
-	NEXT
+	NEXT(
 		obs.event is net.recv
 		http.answer.code is "302 Found"
 		net.sesid is v_sid
@@ -174,7 +175,7 @@ DEFINE VR "ReportRichiestaPoliVaccinali"
 		valCookie = http.answer.header["Set-Cookie"]
 	ACTION
 		ADD "step2" to set s
-		report richieste_poli-vaccinali {
+		report richieste-poli-vaccinali {
 			CAT {"---vsid = ", v_sid , "----" , http.answer.header["Location"], " validation=", valCookie}
 		}
 	NEXT
@@ -189,18 +190,53 @@ DEFINE VR "ReportRichiestaPoliVaccinali"
 		categoria = http.query["categoria"]
 	ACTION
 		ADD "step3" to set s
-		report richieste_poli-vaccinali {
+		report richieste-poli-vaccinali {
 			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " è in possesso del cookie e vuole raggiungere la categoria ", categoria}
 		}
 	NEXT
 		obs.event is net.recv
-		http.answer.code is "200 OK"
+		http.answer.code is in ok_answer_codes
 		net.sesid is v_sid
 	ACTION
 		ADD "step4" to set s
-		report richieste_poli-vaccinali {
+		report richieste-poli-vaccinali {
 			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " visualizza correttamente i poli vaccinali per categoria ", categoria}
 		}
+	)
+	OR(
+		// "no content": il richiedente non risulta tra gli aventi diritto (non per eta' e non per categoria di rischio)
+		obs.event is net.recv
+		http.answer.code is "303 See Other"
+		net.sesid is v_sid
+	ACTION
+		ADD "alt-step2" to set s
+		report richieste-poli-vaccinali {
+			CAT {"---vsid = ", v_sid , "----" , http.answer.header["Location"]}
+		}
+	NEXT
+		obs.event is net.send
+		http.url is in error-page
+		http.query["CF"] is cf		
+		http.query["TEAM"] is team
+		!exists http.query["categoria"]
+		!exists http.cookie["validation"]	
+	VAR 
+		v_sid = net.sesid
+	ACTION
+		ADD "alt-step3" to set s
+		report richieste-poli-vaccinali {
+			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " reindirizzato verso pagina di errore"}
+		}
+	NEXT
+		obs.event is net.recv
+		http.answer.code is in ok_answer_codes
+		net.sesid is v_sid
+	ACTION
+		ADD "alt-step4" to set s
+		report richieste-poli-vaccinali {
+			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " visualizza le informazioni sugli aventi diritto"}
+		}
+	)
 	;
 
 
@@ -211,7 +247,7 @@ DEFINE VR "ReportRichiestaPrenotazione"
 		exists http.data["CF"]
 		exists http.data["categoria"]
 		exists http.data["TEAM"]
-		//dati prenotazione
+		//TODO dati prenotazione
         exists http.cookie["validation"]
 	VAR
 		categoria = http.data["categoria"]
@@ -223,7 +259,7 @@ DEFINE VR "ReportRichiestaPrenotazione"
 		}
 	NEXT(
 		obs.event is net.recv
-		http.answer.code is "200 OK"
+		http.answer.code is in ok_answer_codes
 		net.sesid is v_sid
 	ACTION
 		report richieste_prenotazione {
@@ -260,7 +296,7 @@ DEFINE VR "ReportRichiestaDeletePrenotazione"
 		}
 	NEXT(
 		obs.event is net.recv
-		http.answer.code is "200 OK"
+		http.answer.code is in ok_answer_codes
 		net.sesid is v_sid
 	ACTION
 		report elimina_prenotazione {

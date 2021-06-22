@@ -338,11 +338,14 @@ Every character in the key is significant.
     )
     (if (not categoria_rischio)
       (eis::GiveHTTPAnswer 
-        "HTTP/1.1 204 No Content"
-        ""
-        ""
-        ""
-      )
+          "HTTP/1.1 303 See Other"
+          (string-append  "Location: " 
+                          "http://" (mtfa-eis-get-current-ip-dst pbuf) ":" (number->string (mtfa-eis-get-current-port-dst pbuf)) 
+                          "/error-page-no-content?CF=" codice_fiscale "&TEAM=" team
+          )
+          ""
+          ""
+        )
       ;; answer Redirect with validation cookie
       (eis::GiveHTTPAnswer 
         "HTTP/1.1 302 Found"

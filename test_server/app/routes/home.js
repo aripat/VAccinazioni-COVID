@@ -14,4 +14,8 @@ router.get('/error-page', function(req, res, next) {
   res.render('error', { title: 'Error' });
 });
 
+router.get('/error-page-no-content', function(req, res, next) {
+  res.render('error-no-content', { title: 'Error' });
+});
+
 module.exports = router;
