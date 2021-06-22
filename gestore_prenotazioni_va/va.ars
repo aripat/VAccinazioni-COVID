@@ -254,7 +254,7 @@ DEFINE VR "ReportRichiestaPrenotazione"
 		cf = http.data["CF"]
 		v_sid = net.sesid
 	ACTION
-		report richieste_prenotazione {
+		report richieste-prenotazione {
 			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " richiede di prenotare per la categoria ", categoria, " presso ... in data ..."}
 		}
 	NEXT(
@@ -262,16 +262,16 @@ DEFINE VR "ReportRichiestaPrenotazione"
 		http.answer.code is in ok_answer_codes
 		net.sesid is v_sid
 	ACTION
-		report richieste_prenotazione {
-			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " ha correttamente prenotato presso ... in data ..."}
+		report richieste-prenotazione {
+			CAT{"---vsid = ", v_sid , "---net.sesid = ", net.sesid , "----" , "Utente ", cf, " ha correttamente prenotato presso ... in data ..."}
 		}
 	)
 	OR(
 		obs.event is net.recv
-		//net.sesid is v_sid
+		net.sesid is v_sid
 	ACTION
-		report richieste_prenotazione {
-			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " non e' riuscito ad ultimare la prenotazione a causa di una collisione"}
+		report richieste-prenotazione {
+			CAT{"---vsid = ", v_sid , "---net.sesid = ", net.sesid , "----", "Utente ", cf, " non e' riuscito ad ultimare la prenotazione."}
 		}
 	)
 	;
@@ -290,7 +290,7 @@ DEFINE VR "ReportRichiestaDeletePrenotazione"
 		numero_richiesta = http.query["NUMERO_RICHIESTA"]
 		v_sid = net.sesid
 	ACTION
-		report elimina_prenotazione {
+		report elimina-prenotazione {
 			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " richiede di eliminare la prenotazione #", numero_richiesta}
 		}
 	NEXT(
@@ -298,7 +298,7 @@ DEFINE VR "ReportRichiestaDeletePrenotazione"
 		http.answer.code is in ok_answer_codes
 		net.sesid is v_sid
 	ACTION
-		report elimina_prenotazione {
+		report elimina-prenotazione {
 			CAT{"---vsid = ", v_sid , "----" ,"Utente ", cf, " ha correttamente eliminato la prenotazione #", numero_richiesta}
 		}
 	)
@@ -306,7 +306,7 @@ DEFINE VR "ReportRichiestaDeletePrenotazione"
 		obs.event is net.recv
 		net.sesid is v_sid
 	ACTION
-		report elimina_prenotazione {
+		report elimina-prenotazione {
 			CAT{"---vsid = ", v_sid , "----" ,"Utente ", cf, " non e' riuscito ad eliminare la prenotazione #", numero_richiesta}
 		}
 	)

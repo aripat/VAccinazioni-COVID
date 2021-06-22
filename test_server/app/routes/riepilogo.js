@@ -24,7 +24,6 @@ router.get('/', function(req, res, next) {
     });
 });
 
-//TODO delete in s
 router.delete('/cancella-prenotazione', function(req, res, next) {
     const codicefiscale = req.query.CF
     const team = req.query.TEAM
