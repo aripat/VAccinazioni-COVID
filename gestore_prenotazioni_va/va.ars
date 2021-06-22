@@ -1,7 +1,6 @@
 DEFINE urlset all = { /* }; // */
 
 DEFINE urlset msvc_categoria = { /scopri-categoria, /scopri-categoria/*}; //*/
-//??
 DEFINE urlset msvc_insert_dati_categoria = { /scopri-categoria/inserisci-dati, /scopri-categoria/inserisci-dati/* }; //*/
 
 DEFINE urlset msvc_home = { /, /home };
@@ -9,7 +8,6 @@ DEFINE urlset msvc_home = { /, /home };
 DEFINE urlset msvc_prenotazione = { /prenota-appuntamento, /prenota-appuntamento/* }; //*/
 
 DEFINE urlset msvc_riepilogo = { /riepilogo, /riepilogo/* }; //*/
-//??
 DEFINE urlset msvc_insert_dati_riepilogo = { /riepilogo/inserisci-dati, /riepilogo/inserisci-dati/* }; //*/
 
 DEFINE urlset error-page = { /error-page, /error-page/*, /error-page-no-content, /error-page-no-content/* }; //*/
@@ -26,13 +24,12 @@ DEFINE AR "GoHome"
 		tcp.redirect "? to-application-server"
 	;
 
-//??
 //inserisci dati per prenotare
 DEFINE AR "GetCategoriaInserisciDati"
 	CONDITION
 		http.method is http.GET
 		http.url is in msvc_insert_dati_categoria
-		//la query deve essere vuota?
+		//la query deve essere vuota? TODO
 	ACTION
 		tcp.redirect "? to-application-server"
 	;
@@ -74,14 +71,17 @@ DEFINE AR "RichiestaPrenotazione"
 		exists http.data["CF"]
 		exists http.data["categoria"]
 		exists http.data["TEAM"]
-		//TODO dati prenotazione
+		exists http.data["id_erogazione"]
+		exists http.data["polo_vaccinale"]
+		exists http.data["vaccino"]
+		exists http.data["data"]
+		exists http.data["ora"]
         exists http.cookie["validation"]
-        CALL is_valid_cookie WITH http.cookie["validation"] 
+        CALL is_valid_cookie WITH http.cookie["validation"]
 	ACTION
 		tcp.redirect "? to-application-server"
 	;
 
-//??
 //inserisci dati per ottenere il riepilogo
 DEFINE AR "GetRiepilogoInserisciDati"
 	CONDITION
@@ -247,15 +247,24 @@ DEFINE VR "ReportRichiestaPrenotazione"
 		exists http.data["CF"]
 		exists http.data["categoria"]
 		exists http.data["TEAM"]
-		//TODO dati prenotazione
+		exists http.data["id_erogazione"]
+		exists http.data["polo_vaccinale"]
+		exists http.data["vaccino"]
+		exists http.data["data"]
+		exists http.data["ora"]
         exists http.cookie["validation"]
 	VAR
 		categoria = http.data["categoria"]
 		cf = http.data["CF"]
+		id_erogazione = http.data["id_erogazione"]
+		polo_vaccinale = http.data["polo_vaccinale"]
+		vaccino = http.data["vaccino"]
+		giorno = http.data["data"]
+		ora = http.data["ora"]
 		v_sid = net.sesid
 	ACTION
 		report richieste-prenotazione {
-			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " richiede di prenotare per la categoria ", categoria, " presso ... in data ..."}
+			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " richiede di prenotare per la categoria ", categoria, " una dose di vaccino " , vaccino ," presso il polo ", polo_vaccinale, " in data ", giorno, " ", ora, " con id erogazione ", id_erogazione}
 		}
 	NEXT(
 		obs.event is net.recv
@@ -263,7 +272,7 @@ DEFINE VR "ReportRichiestaPrenotazione"
 		net.sesid is v_sid
 	ACTION
 		report richieste-prenotazione {
-			CAT{"---vsid = ", v_sid , "---net.sesid = ", net.sesid , "----" , "Utente ", cf, " ha correttamente prenotato presso ... in data ..."}
+			CAT{"---vsid = ", v_sid , "---net.sesid = ", net.sesid , "----" , "Utente ", cf, " ha correttamente prenotato, per la categoria ", categoria, ", una dose di vaccino " , vaccino ," presso il polo ", polo_vaccinale, " in data ", giorno, " ", ora, " con id erogazione ", id_erogazione}
 		}
 	)
 	OR(
@@ -271,7 +280,7 @@ DEFINE VR "ReportRichiestaPrenotazione"
 		net.sesid is v_sid
 	ACTION
 		report richieste-prenotazione {
-			CAT{"---vsid = ", v_sid , "---net.sesid = ", net.sesid , "----", "Utente ", cf, " non e' riuscito ad ultimare la prenotazione."}
+			CAT{"---vsid = ", v_sid , "---net.sesid = ", net.sesid , "----", "Utente ", cf, " non e' riuscito ad ultimare la prenotazione per l'erogazione avente id ", id_erogazione}
 		}
 	)
 	;
