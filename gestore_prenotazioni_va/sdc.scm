@@ -310,7 +310,7 @@ Every character in the key is significant.
 
 (define (eta_in_range codice_fiscale)
   ;;TODO read from file!
-  (define lower_bound 42)
+  (define lower_bound 20)
   (define upper_bound 81)
   (Show "eta_in_range is running")
   (let
@@ -374,7 +374,8 @@ Every character in the key is significant.
                       "http://" (mtfa-eis-get-current-ip-dst pbuf) ":" (number->string (mtfa-eis-get-current-port-dst pbuf)) 
                       "/error-page"
       )
-      (string-append  "Set-Cookie: validation=12334; Path=/ ; Expires=" (date->string (current-date 0) "~a, ~d  ~b ~Y ~T")
+      (string-append  "Set-Cookie: validation=expired; Path=/ ; Expires=" (date->string (current-date 0) "~a, ~d  ~b ~Y ~T") "\r\n"
+                      "Set-Cookie: session=expired; Path=/ ; Expires=" (date->string (current-date 0) "~a, ~d  ~b ~Y ~T") "\r\n"
       )
       ""
   )

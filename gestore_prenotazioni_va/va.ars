@@ -39,7 +39,6 @@ DEFINE AR "GetCategoriaInserisciDati"
 	
 
 // Recupera la categoria di rischio per l'utente e la valida tramite cookie
-//TODO sistema applicazione con 204
 DEFINE AR "GetCategoriaRischio"
 	CONDITION
 		http.method is http.GET
@@ -240,6 +239,7 @@ DEFINE VR "ReportRichiestaPoliVaccinali"
 	;
 
 
+//In prenotazione, invia i dati necessari a richiedere la prenotazione
 DEFINE VR "ReportRichiestaPrenotazione"
 	CONDITION
 		http.method is http.POST
@@ -268,16 +268,15 @@ DEFINE VR "ReportRichiestaPrenotazione"
 	)
 	OR(
 		obs.event is net.recv
-		net.sesid is v_sid
-		http.answer.code is "404 Not Found"
+		//net.sesid is v_sid
 	ACTION
 		report richieste_prenotazione {
-			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " non e' riuscito ad ultimare la prenotazione"}
+			CAT{"---vsid = ", v_sid , "----" , "Utente ", cf, " non e' riuscito ad ultimare la prenotazione a causa di una collisione"}
 		}
 	)
 	;
 
-//TODO come accedere al metodo?
+//In riepilogo, richiedi cancellazione della prenotazione
 DEFINE VR "ReportRichiestaDeletePrenotazione"
 	CONDITION
 		http.method is http.DELETE

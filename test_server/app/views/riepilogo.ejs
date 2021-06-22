@@ -1,5 +1,8 @@
 <%- include("partials/header", {title: title, scripts:undefined})%>
     <main style="padding:20px;">
+        <% if(results.length == 0){%>
+            <p>Nessuna prenotazione corrisponde alla ricerca </p>
+        <% }else{%>
         <h4 style="margin: 20px; margin-left: 0px;">Riepilogo</h4>
         <% const result = results[0];%>
             <div class="card" style="margin: 20px;  margin-left: 0px; min-width: 300px; width: calc(50% - 40px);">
@@ -7,9 +10,10 @@
                     <h5>Richiesta #<%= result['numero_richiesta']%></h5>
                 </div>
                 <div class="card-body card-erogazioni">
-                        <p style="padding: 5px 10px">Polo vaccinale <%= result['polo_vaccinale']%></p>
-                        <p style="padding: 5px 10px">Data</p>
-                        <p style="padding: 5px 10px">Ora</p>
+                        <p style="padding: 5px 10px">Polo vaccinale: <%= result['polo_vaccinale']%></p>
+                        <p style="padding: 5px 10px">Data:<%= result['data']%></p>
+                        <p style="padding: 5px 10px">Ora: <%= result['ora']%></p>
+                        <p style="padding: 5px 10px">Vaccino: <%= result['vaccino']%></p>
                         <button id="deleteButton" class="btn btn-primary">Cancella</button>
                 </div>
             </div>
@@ -22,13 +26,18 @@
                         if(this.readyState == 4){
                             switch(this.status){
                                 case 200:
-                                    console.log("eliminato")
+                                    alert("Cancellazione avvenuta con successo");
+                                    window.location.href = "http://127.0.0.1:8888"
                             }
                         }
                     };
-                    xhr.open('DELETE', "http://127.0.0.1:8888/riepilogo/cancella_prenotazione"+window.location.search);
+                    xhr.open('DELETE', "http://127.0.0.1:8888/riepilogo/cancella-prenotazione"+window.location.search);
                     xhr.send();
                 })
             </script>
+        <% }%>
+        <button style="margin:20px" class="btn btn-primary">
+            <a href="http://127.0.0.1:8888/" class="btn btn-primary">Torna alla Home</a> 
+        </button>
     </main>
 <%- include("partials/footer")%>

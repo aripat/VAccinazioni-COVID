@@ -1,5 +1,8 @@
 <%- include("partials/header", {title: title, scripts:undefined});%>
 <main style="padding:20px;">
+    <%  if (status == 409){%>
+        <p style="display:block; padding: 10px; margin-bottom: 25px; border: tomato 3px solid; border-radius: 5px; color: tomato; font-size: 1.5em;">Spiacenti, l'appuntamento selezionato non e' piu' disponibile</p>
+    <% }%> 
     <h4>Poli vaccinali</h4>
     <p>Di seguito una lista dei poli vaccinali disponibili, divisi per giorno e selezionati in accordo alla tua categoria di rischio</p>
     <div class="accordion" id="accordionPoliVaccinali">
