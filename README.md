@@ -17,7 +17,7 @@ Per avviare i servizi xampp eseguire il comando
 
 `sudo /opt/lampp/xampp start`
 
-
+TODO creare i db dai dump
 
 ### Frontend
 
