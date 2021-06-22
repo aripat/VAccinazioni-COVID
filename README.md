@@ -7,7 +7,7 @@ OS: Ubuntu 20.* Virtual Machine
 
 Docker version: 20.10.5
 
-dozenapps/va image: versione aggiornata al 10/06/2021
+dozenapps/va image: versione aggiornata al 21/06/2021
 
 
 
