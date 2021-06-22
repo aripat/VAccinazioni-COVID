@@ -164,7 +164,7 @@ DEFINE VR "ReportRichiestaPoliVaccinali"
 		ADD "step1" to set s
 		report richieste_poli-vaccinali {
 			CAT{
-				"---vsid = ", v_sid , "----" , http.url, " cf=", http.query["CF"], " team=", http.query["TEAM"] }
+				"---vsid = ", v_sid , "----" , http.url, " cf=", cf, " team=", http.query["TEAM"] }
 			}
 	NEXT
 		obs.event is net.recv
@@ -180,8 +180,8 @@ DEFINE VR "ReportRichiestaPoliVaccinali"
 	NEXT
 		obs.event is net.send
 		http.url is in msvc_categoria
-		http.query["cf"] is cf		//??
-		http.query["team"] is team	//??
+		http.query["CF"] is cf		
+		http.query["TEAM"] is team	
 		exists http.query["categoria"]
 		exists http.cookie["validation"]
 	VAR 

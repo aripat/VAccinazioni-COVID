@@ -16,7 +16,7 @@ router.post('/', function(req, res, next) {
     var numero_richiesta = '00000000000002'
     //TODO fail per id_erogazione duplicata
     
-    const sql = 'INSERT INTO `prenotazioni`(`codice_fiscale`, `team`, `numero_richiesta`, `id_erogazione`) VALUES (\''+codice_fiscale+'\',\''+ TEAM +'\', \''+ numero_richiesta +'\',\''+id_erogazione+'\')'
+    const sql = 'INSERT INTO `prenotazioni`(`codice_fiscale`, `team`, `numero_richiesta`, `id_erogazione`) VALUES (\''+codice_fiscale+'\',\''+ TEAM +'\', \''+ numero_richiesta +'\',\''+id_erogazione+'\')';
 
     connection.query(sql, function (error, results, fields) {
         console.log("prenota appuntamento GET")
