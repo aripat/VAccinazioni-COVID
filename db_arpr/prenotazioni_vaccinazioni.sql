@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 19, 2021 at 06:23 PM
+-- Generation Time: Jun 23, 2021 at 09:44 AM
 -- Server version: 10.4.19-MariaDB
 -- PHP Version: 7.3.28
 
@@ -62,12 +62,31 @@ INSERT INTO `erogazione` (`id_erogazione`, `polo_vaccinale`, `vaccino`, `data`, 
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `operatore_sanitario`
+--
+
+CREATE TABLE `operatore_sanitario` (
+  `id_operatore` char(10) NOT NULL,
+  `polo_vaccinale` varchar(100) NOT NULL,
+  `password` char(32) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `operatore_sanitario`
+--
+
+INSERT INTO `operatore_sanitario` (`id_operatore`, `polo_vaccinale`, `password`) VALUES
+('0123456789', 'ColleferroAuditorium', '781e5e245d69b566979b86e28d23f2c7');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `polo_per_categoria`
 --
 
 CREATE TABLE `polo_per_categoria` (
   `polo_vaccinale` varchar(100) NOT NULL,
-  `categoria` enum('A','B','C','D','E','F','G') NOT NULL
+  `categoria` enum('A','B','C','D','E','F','G','Z') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -75,7 +94,14 @@ CREATE TABLE `polo_per_categoria` (
 --
 
 INSERT INTO `polo_per_categoria` (`polo_vaccinale`, `categoria`) VALUES
-('ColleferroAuditorium', 'E');
+('ColleferroAuditorium', 'A'),
+('ColleferroAuditorium', 'B'),
+('ColleferroAuditorium', 'C'),
+('ColleferroAuditorium', 'D'),
+('ColleferroAuditorium', 'E'),
+('ColleferroAuditorium', 'F'),
+('ColleferroAuditorium', 'G'),
+('ColleferroAuditorium', 'Z');
 
 -- --------------------------------------------------------
 
@@ -85,10 +111,19 @@ INSERT INTO `polo_per_categoria` (`polo_vaccinale`, `categoria`) VALUES
 
 CREATE TABLE `prenotazioni` (
   `codice_fiscale` varchar(30) NOT NULL,
+  `recapito` varchar(20) NOT NULL,
   `team` char(13) NOT NULL,
-  `numero_richiesta` char(14) NOT NULL,
+  `numero_richiesta` char(16) NOT NULL,
   `id_erogazione` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `prenotazioni`
+--
+
+INSERT INTO `prenotazioni` (`codice_fiscale`, `recapito`, `team`, `numero_richiesta`, `id_erogazione`) VALUES
+('RZZLSF40', '1234567890', '0000000000007', '0000000000000013', 13),
+('RZZLSF70', '1234567890', '0000000000009', '0000000000000003', 19);
 
 -- --------------------------------------------------------
 
@@ -113,6 +148,13 @@ ALTER TABLE `erogazione`
   ADD KEY `fk_foreign_key_polo_vaccinale` (`polo_vaccinale`);
 
 --
+-- Indexes for table `operatore_sanitario`
+--
+ALTER TABLE `operatore_sanitario`
+  ADD PRIMARY KEY (`id_operatore`),
+  ADD KEY `fk_operatore_polo` (`polo_vaccinale`);
+
+--
 -- Indexes for table `polo_per_categoria`
 --
 ALTER TABLE `polo_per_categoria`
@@ -122,8 +164,9 @@ ALTER TABLE `polo_per_categoria`
 -- Indexes for table `prenotazioni`
 --
 ALTER TABLE `prenotazioni`
-  ADD PRIMARY KEY (`numero_richiesta`,`id_erogazione`),
-  ADD KEY `foreign_key_id_erogazione` (`id_erogazione`);
+  ADD PRIMARY KEY (`codice_fiscale`,`team`),
+  ADD UNIQUE KEY `id_erogazione` (`id_erogazione`),
+  ADD UNIQUE KEY `numero_richiesta` (`numero_richiesta`);
 
 --
 -- Indexes for table `vaccino_per_categoria`
@@ -150,6 +193,12 @@ ALTER TABLE `erogazione`
 --
 ALTER TABLE `erogazione`
   ADD CONSTRAINT `fk_foreign_key_polo_vaccinale` FOREIGN KEY (`polo_vaccinale`) REFERENCES `polo_per_categoria` (`polo_vaccinale`);
+
+--
+-- Constraints for table `operatore_sanitario`
+--
+ALTER TABLE `operatore_sanitario`
+  ADD CONSTRAINT `fk_operatore_polo` FOREIGN KEY (`polo_vaccinale`) REFERENCES `polo_per_categoria` (`polo_vaccinale`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `prenotazioni`
