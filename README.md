@@ -11,13 +11,18 @@ dozenapps/va image: versione aggiornata al 21/06/2021
 
 
 
-### MySQL
+### MySQL (tramite cartella default di xampp /opt/lampp/bin/mysql)
 
 Per avviare i servizi xampp eseguire il comando
 
 `sudo /opt/lampp/xampp start`
 
-TODO creare i db dai dump
+Posizionarsi sulla cartella `./db_arpr` ed eseguire il comando
+
+`sudo bash createDB.sh`
+
+(inserire le password di root quando richiesto)
+
 
 ### Frontend
 
