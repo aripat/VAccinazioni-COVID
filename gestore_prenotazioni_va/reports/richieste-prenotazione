@@ -1,0 +1,16 @@
+CAT{---vsid = 14411261880466384627----Utente RZZLSF98 richiede di prenotare per la categoria E una dose di vaccino Pfizer presso il polo ColleferroAuditorium in data 2021-07-08 14%3A15 con id erogazione 7}|
+
+CAT{---vsid = 14411261880466384627---net.sesid = 14411261880466384627----Utente RZZLSF98 ha correttamente prenotato, per la categoria E, una dose di vaccino Pfizer presso il polo ColleferroAuditorium in data 2021-07-08 14%3A15 con id erogazione 7}|
+
+CAT{---vsid = 16449703177834915098----Utente RZZLSF98 richiede di prenotare per la categoria E una dose di vaccino Pfizer presso il polo ColleferroAuditorium in data 2021-07-09 13%3A45 con id erogazione 17}|
+
+CAT{---vsid = 16449703177834915098---net.sesid = 16449703177834915098----Utente RZZLSF98 non e' riuscito ad ultimare la prenotazione per l'erogazione avente id 17}|
+
+CAT{---vsid = 2983493306971443963----Utente RZZLSF98 richiede di prenotare per la categoria E una dose di vaccino Pfizer presso il polo ColleferroAuditorium in data 2021-07-09 13%3A45 con id erogazione 17}|
+
+CAT{---vsid = 2983493306971443963---net.sesid = 2983493306971443963----Utente RZZLSF98 non e' riuscito ad ultimare la prenotazione per l'erogazione avente id 17}|
+
+CAT{---vsid = 10977953447916577616----Utente RZZLSF98 richiede di prenotare per la categoria E una dose di vaccino Pfizer presso il polo ColleferroAuditorium in data 2021-07-09 13%3A45 con id erogazione 17}|
+
+CAT{---vsid = 10977953447916577616---net.sesid = 10977953447916577616----Utente RZZLSF98 ha correttamente prenotato, per la categoria E, una dose di vaccino Pfizer presso il polo ColleferroAuditorium in data 2021-07-09 13%3A45 con id erogazione 17}|
+

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 23, 2021 at 09:44 AM
+-- Generation Time: Jun 23, 2021 at 11:00 AM
 -- Server version: 10.4.19-MariaDB
 -- PHP Version: 7.3.28
 
@@ -58,25 +58,6 @@ INSERT INTO `erogazione` (`id_erogazione`, `polo_vaccinale`, `vaccino`, `data`, 
 (18, 'ColleferroAuditorium', 'Pfizer', '2021-07-30', '13:45'),
 (19, 'ColleferroAuditorium', 'Pfizer', '2021-07-08', '13:45'),
 (20, 'ColleferroAuditorium', 'Pfizer', '2021-07-29', '13:45');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `operatore_sanitario`
---
-
-CREATE TABLE `operatore_sanitario` (
-  `id_operatore` char(10) NOT NULL,
-  `polo_vaccinale` varchar(100) NOT NULL,
-  `password` char(32) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `operatore_sanitario`
---
-
-INSERT INTO `operatore_sanitario` (`id_operatore`, `polo_vaccinale`, `password`) VALUES
-('0123456789', 'ColleferroAuditorium', '781e5e245d69b566979b86e28d23f2c7');
 
 -- --------------------------------------------------------
 
@@ -148,13 +129,6 @@ ALTER TABLE `erogazione`
   ADD KEY `fk_foreign_key_polo_vaccinale` (`polo_vaccinale`);
 
 --
--- Indexes for table `operatore_sanitario`
---
-ALTER TABLE `operatore_sanitario`
-  ADD PRIMARY KEY (`id_operatore`),
-  ADD KEY `fk_operatore_polo` (`polo_vaccinale`);
-
---
 -- Indexes for table `polo_per_categoria`
 --
 ALTER TABLE `polo_per_categoria`
@@ -193,12 +167,6 @@ ALTER TABLE `erogazione`
 --
 ALTER TABLE `erogazione`
   ADD CONSTRAINT `fk_foreign_key_polo_vaccinale` FOREIGN KEY (`polo_vaccinale`) REFERENCES `polo_per_categoria` (`polo_vaccinale`);
-
---
--- Constraints for table `operatore_sanitario`
---
-ALTER TABLE `operatore_sanitario`
-  ADD CONSTRAINT `fk_operatore_polo` FOREIGN KEY (`polo_vaccinale`) REFERENCES `polo_per_categoria` (`polo_vaccinale`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `prenotazioni`
