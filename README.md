@@ -1,5 +1,7 @@
 # VAccinazioni-COVID
-Presentiamo qui un sistema a supporto della gestione delle prenotazioni per le vaccinazioni COVID-19 nel Lazio. Il sistema si struttura con un server frontend nodejs, un database MySQL che mantiene i dati delle prenotazioni effettuate, dei poli vaccinali e relativi appuntamenti disponibili e una VA che ha il compito di orchestrare le richieste degli utenti tra il server e un sistema informativo. Nel nostro caso tale sistema è, per semplicità, un altro database MySQL contenente i dati personali degli aventi diritto al vaccino per appartenenza ad una categoria di rischio e tale catrgoria. Il progetto è presentato dal gruppo Biancone Saverio, Patrizi Arianna e Ruzzetti Elena Sofia per l'esame di SDC(2021).
+Presentiamo qui un sistema a supporto della gestione delle prenotazioni per le vaccinazioni COVID-19 nel Lazio. Il sistema si struttura con un application server nodejs, un database MySQL che mantiene i dati delle prenotazioni effettuate, dei poli vaccinali e relativi appuntamenti disponibili e una VA che ha il compito di orchestrare le richieste degli utenti tra il server e un sistema informativo. Nel nostro caso tale sistema è, per semplicità, un altro database MySQL contenente i dati personali degli aventi diritto al vaccino per appartenenza ad una categoria di rischio e tale catrgoria. 
+
+Il progetto è presentato dal gruppo Biancone Saverio, Patrizi Arianna e Ruzzetti Elena Sofia per l'esame di SDC(2021).
 
 ## Istruzioni per avviare il sistema in locale
 
